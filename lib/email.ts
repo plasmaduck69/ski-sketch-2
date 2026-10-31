@@ -30,6 +30,18 @@ export function loginEmail(code: string, link: string) {
   return { subject, text, html };
 }
 
+// Turns Resend's error into something useful on the sign-in page, without showing anyone's address.
+export function explainResendError(status: number, body: string): string {
+  let msg = "";
+  try { msg = String(JSON.parse(body).message || ""); } catch { msg = body; }
+  msg = msg.replace(/[\w.+-]+@[\w-]+(\.[\w-]+)+/g, "(an address)").slice(0, 240);
+  if (/testing emails|own email/i.test(msg)) return "Email is in test mode: until skisketch.com is verified in Resend, codes can only go to the email you used to sign up for Resend.";
+  if (status === 401 || /api key is invalid|invalid api key|missing api key/i.test(msg)) return "Email isn't set up correctly: Resend rejected the API key. Copy a fresh key into RESEND_API_KEY in Vercel and redeploy.";
+  if (/domain is not verified|not verified/i.test(msg)) return "The sending domain isn't verified in Resend yet. Finish verifying it, or remove EMAIL_FROM in Vercel for now, then redeploy.";
+  if (status === 429) return "Too many emails at once. Wait a minute and try again.";
+  return msg ? `Couldn't send the email: ${msg}` : "Couldn't send the email just now. Try again in a minute.";
+}
+
 export async function sendLoginEmail(to: string, code: string, link: string): Promise<{ printed: boolean }> {
   const key = process.env.RESEND_API_KEY;
   if (!key) {
@@ -46,8 +58,7 @@ export async function sendLoginEmail(to: string, code: string, link: string): Pr
   if (!r.ok) {
     const detail = await r.text().catch(() => "");
     console.error("Resend error", r.status, detail.slice(0, 500));
-    if (r.status === 403 && /testing emails|own email/i.test(detail)) throw new EmailSendFailed("Email is still in test mode: it can only go to the site owner's address until the site's domain is verified in Resend.");
-    throw new EmailSendFailed("Couldn't send the email just now. Try again in a minute.");
+    throw new EmailSendFailed(explainResendError(r.status, detail));
   }
   return { printed: false };
 }

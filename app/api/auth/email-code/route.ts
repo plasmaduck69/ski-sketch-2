@@ -14,15 +14,16 @@ export async function POST(req: Request) {
     const body = await readJson(req);
     const email = normalizeEmail(body.email);
     if (!email) throw new HttpError(400, "Enter a valid email address.");
-    const ipKey = "code-ip|" + throttleKey(req, ""), emailKey = "code-email|" + email;
+    // Only codes that actually went out count toward the limit.
+    const ipKey = "sent-ip|" + throttleKey(req, ""), emailKey = "sent-email|" + email;
     if ((await isThrottled(ipKey, PER_ADDRESS)) || (await isThrottled(emailKey, PER_EMAIL))) throw new HttpError(429, "Too many codes requested. Wait 15 minutes and try again.");
     if (process.env.ALLOW_SIGNUPS === "false" && !(await findUserByEmail(email))) throw new HttpError(403, "New accounts are turned off on this site.");
-    await recordFailure(ipKey); await recordFailure(emailKey);
     const { code, token } = await issueLoginCode(email);
     const next = typeof body.next === "string" && body.next.startsWith("/") && !body.next.startsWith("//") ? body.next : "/lab";
     const origin = process.env.APP_URL || new URL(req.url).origin;
     const link = `${origin}/login?token=${encodeURIComponent(token)}&next=${encodeURIComponent(next)}`;
     const { printed } = await sendLoginEmail(email, code, link);
+    await recordFailure(ipKey); await recordFailure(emailKey);
     return Response.json({ sent: true, printed, minutes: CODE_MINUTES });
   } catch (err) { return errorResponse(err); }
 }

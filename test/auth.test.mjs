@@ -61,3 +61,12 @@ test("finds the database setting under the names Vercel uses", async () => {
   assert.equal(pgUrl({ MY_DATABASE_URL: "not a url" }), "");
   assert.equal(pgUrl({}), "");
 });
+
+test("Resend errors are explained without showing addresses", async () => {
+  const { explainResendError } = await import("../lib/email.ts");
+  const t = explainResendError(403, JSON.stringify({ message: "You can only send testing emails to your own email address (owner@gmail.com). To send emails to other recipients, please verify a domain" }));
+  assert.match(t, /test mode/); assert.doesNotMatch(t, /owner@gmail/);
+  assert.match(explainResendError(401, JSON.stringify({ message: "API key is invalid" })), /rejected the API key/);
+  assert.match(explainResendError(403, JSON.stringify({ message: "The skisketch.com domain is not verified. Please, add and verify your domain" })), /isn't verified/);
+  assert.doesNotMatch(explainResendError(422, JSON.stringify({ message: "Invalid `to` field: x@y.co" })), /x@y\.co/);
+});
