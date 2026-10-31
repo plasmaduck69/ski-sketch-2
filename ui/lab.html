@@ -9,7 +9,7 @@
   --line: #d6dbd5; --line-2: #e6e9e4;
   --accent: #0d7a73; --accent-ink: #ffffff; --accent-soft: #d6eeeb;
   --ref: #6b4fd0; --ref-soft: #e7e1fb;
-  --high: #b42318; --high-soft: #fde8e6; --med: #a54a07; --med-soft: #fdf0e1; --low: #1d5fbf; --low-soft: #e5eefb; --info: #5a656b; --info-soft: #eceeec;
+  --high: #b42318; --high-soft: #fde8e6; --med: #a54a07; --med-soft: #fdf0e1; --low: #1d5fbf; --low-soft: #e5eefb; --info: #5a656b; --info-soft: #eceeec; --warn: #7a5a00; --warn-soft: #faf1d2;
   --c-base: #2a2f33; --c-steel: #6c757c; --c-rubber: #11161a; --c-metal: #b8c0c6; --c-side: #8e7f63; --c-top: #d4dbe0;
   --w-light: #e2c48e; --w-hard: #b07a42; --w-soft: #efdcb6;
   --f-eglass: #9ad3cc; --f-carbon: #3b4247; --f-flax: #cdb478; --f-basalt: #8a7f74; --f-aramid: #e5c84a;
@@ -25,7 +25,7 @@
     --line: #2d3438; --line-2: #252b2e;
     --accent: #4cc2b8; --accent-ink: #0b1514; --accent-soft: #173431;
     --ref: #a993ff; --ref-soft: #2a2443;
-    --high: #ff8a7f; --high-soft: #3a1d1b; --med: #f4b163; --med-soft: #3a2a17; --low: #8db8ff; --low-soft: #1b2738; --info: #9ba5aa; --info-soft: #252b2e;
+    --high: #ff8a7f; --high-soft: #3a1d1b; --med: #f4b163; --med-soft: #3a2a17; --low: #8db8ff; --low-soft: #1b2738; --info: #9ba5aa; --info-soft: #252b2e; --warn: #e3c25a; --warn-soft: #302810;
     --c-base: #050607; --c-steel: #8d969c; --c-rubber: #000000; --c-metal: #c7cfd4; --c-side: #9d8e70; --c-top: #5a656c;
     --w-light: #c9a66b; --w-hard: #95602e; --w-soft: #dcc391;
     --f-eglass: #5fb3aa; --f-carbon: #0d1012; --f-flax: #b89c5c; --f-basalt: #7a6f64; --f-aramid: #cfb037;
@@ -39,7 +39,7 @@
   --line: #2d3438; --line-2: #252b2e;
   --accent: #4cc2b8; --accent-ink: #0b1514; --accent-soft: #173431;
   --ref: #a993ff; --ref-soft: #2a2443;
-  --high: #ff8a7f; --high-soft: #3a1d1b; --med: #f4b163; --med-soft: #3a2a17; --low: #8db8ff; --low-soft: #1b2738; --info: #9ba5aa; --info-soft: #252b2e;
+  --high: #ff8a7f; --high-soft: #3a1d1b; --med: #f4b163; --med-soft: #3a2a17; --low: #8db8ff; --low-soft: #1b2738; --info: #9ba5aa; --info-soft: #252b2e; --warn: #e3c25a; --warn-soft: #302810;
   --c-base: #050607; --c-steel: #8d969c; --c-rubber: #000000; --c-metal: #c7cfd4; --c-side: #9d8e70; --c-top: #5a656c;
   --w-light: #c9a66b; --w-hard: #95602e; --w-soft: #dcc391;
   --f-eglass: #5fb3aa; --f-carbon: #0d1012; --f-flax: #b89c5c; --f-basalt: #7a6f64; --f-aramid: #cfb037;
@@ -436,9 +436,13 @@ table.sheet tr:last-child th, table.sheet tr:last-child td { border-bottom: 0; }
 .issue.High { border-color: var(--high); background: var(--high-soft); }
 .issue.Medium { border-color: var(--med); background: var(--med-soft); }
 .issue.Low { border-color: var(--low); background: var(--low-soft); }
+.issue.Warning { border-color: var(--warn); border-left-style: dashed; background: var(--warn-soft); }
+.issue .nopen { font-weight: 400; color: var(--muted); font-size: 12px; }
 .issue .t { font-weight: 600; }
 .chip { display: inline-block; font-size: 11px; font-weight: 600; padding: 1px 6px; border-radius: 10px; margin-right: 6px; background: var(--panel); border: 1px solid currentColor; }
-.chip.High { color: var(--high); } .chip.Medium { color: var(--med); } .chip.Low { color: var(--low); } .chip.Info { color: var(--info); }
+.chip.High { color: var(--high); } .chip.Medium { color: var(--med); } .chip.Low { color: var(--low); } .chip.Info { color: var(--info); } .chip.Warning { color: var(--warn); }
+.layup-read { font-size: 12px; color: var(--muted); padding: 6px 6px 2px; line-height: 1.45; }
+.layup-read b { color: var(--ink); font-weight: 600; } .layup-read .over { color: var(--warn); font-weight: 600; }
 .issue p { margin: 4px 0 0; font-size: 13px; }
 .issue p b { font-weight: 600; }
 .ok { color: var(--muted); }
@@ -795,6 +799,30 @@ const sheetRows = (rows) => rows.map(([label, path, kind, min, max, step, hint])
 const fiberSw = (f) => `<span class="swatch" style="background:var(--f-${f})"></span>`;
 const fabricUnit = () => S.units === "us" ? "oz/yd²" : "g/m²";
 
+// Layup timing and metal prep. These feed the Warning checks only; they never change the score.
+const SHOP_TEMPS_C = [10, 13, 16, 18, 20, 22, 24, 27, 30, 32, 35];
+const selOpts = (pairs, sel) => pairs.map(([k, n]) => `<option value="${k}"${String(k) === String(sel) ? " selected" : ""}>${esc(n)}</option>`).join("");
+function processRows(b) {
+  const pr = { ...E.PROCESS_DEFAULTS, ...(b.process || {}) };
+  const tLabel = (c) => U.fmt("tempC", c);
+  const temps = SHOP_TEMPS_C.includes(+pr.shopTempC) ? SHOP_TEMPS_C : [...SHOP_TEMPS_C, +pr.shopTempC].sort((x, y) => x - y);
+  const custom = pr.hardener === "custom";
+  const minField = (path, v, min, max) => `<input class="in" type="number" inputmode="numeric" data-path="${path}" id="f-${path}" min="${min}" max="${max}" step="1" value="${Math.round(v)}">`;
+  return `<tr><th><label for="f-process.metalPrep">Metal prep</label><small>roughing and cleaning the metal before it goes in</small></th><td colspan="2"><select id="f-process.metalPrep" class="sel" data-path="process.metalPrep">${selOpts(Object.entries(E.METAL_PREP).map(([k, v]) => [k, v.name]), pr.metalPrep)}</select></td></tr>
+      <tr><th><label for="f-process.hardener">Epoxy hardener</label><small>sets pot life and working time</small></th><td colspan="2"><select id="f-process.hardener" class="sel" data-path="process.hardener">${selOpts(Object.entries(E.HARDENERS).map(([k, v]) => [k, v.name]), pr.hardener)}</select></td></tr>
+      ${custom ? `<tr><th><label for="f-process.potLifeMin">Pot life</label><small>in the cup, from the data sheet (at 22 °C / 72 °F)</small></th><td>${minField("process.potLifeMin", pr.potLifeMin, 3, 240)}</td><td class="u">min</td></tr>
+      <tr><th><label for="f-process.workLifeMin">Working time</label><small>thin film, from the data sheet</small></th><td>${minField("process.workLifeMin", pr.workLifeMin, 10, 600)}</td><td class="u">min</td></tr>` : ""}
+      <tr><th><label for="f-process.shopTempC">Shop temperature</label><small>epoxy kicks about twice as fast every 10 °C (18 °F) warmer</small></th><td colspan="2"><select id="f-process.shopTempC" class="sel" data-path="process.shopTempC" data-num="1">${selOpts(temps.map((c) => [c, tLabel(c)]), pr.shopTempC)}</select></td></tr>
+      <tr><th><label for="f-process.batches">Mix epoxy in</label><small>smaller batches each have to last less time</small></th><td colspan="2"><select id="f-process.batches" class="sel" data-path="process.batches" data-num="1">${selOpts([1, 2, 3, 4, 5].map((n) => [n, n === 1 ? "1 batch" : `${n} batches`]), pr.batches)}</select></td></tr>`;
+}
+function renderLayupRead() {
+  const el = $("#layupRead"), L = S.result && S.result.layup;
+  if (!el || !L) return;
+  const m = (x) => `${Math.round(x)} min`, at = U.fmt("tempC", L.tempC);
+  el.innerHTML = S.build.press === "factory" ? "" : `Layup ≈ <b>${m(L.total)}</b> per pair · <span class="${L.overPot || L.closePot ? "over" : ""}">${L.batches > 1 ? `${m(L.perBatch)} per batch · ` : ""}pot life ≈ <b>${m(L.potMin)}</b></span> · <span class="${L.overWork || L.closeWork ? "over" : ""}">working time ≈ <b>${m(L.workMin)}</b></span> at ${esc(at)}.
+    ${L.overWork ? "The first layers would gel before the press closes." : L.closeWork ? "Close to the working time: stage every layer before you mix." : L.overPot ? `Mix in ${L.batchesNeeded}+ batches or use a slower hardener.` : L.closePot ? `Cutting it close; ${L.batchesNeeded} batches would give you slack.` : "Inside the window."} <span class="sub">Rough estimate.</span>`;
+}
+
 function fabricRows(side) {
   const list = S.build[side] || [];
   const us = S.units === "us";
@@ -868,14 +896,16 @@ function renderInputs() {
     <div class="group-title"><h3>Process</h3></div>
     <table class="sheet">${sheetRows(PROCESS)}
       <tr><th><label for="f-press">Press</label><small>decides whether metal layers can bond</small></th><td colspan="2"><select id="f-press" class="sel" data-path="press">${opt(E.PRESSES, b.press)}</select></td></tr>
+      ${processRows(b)}
     </table>
+    <div class="layup-read" id="layupRead"></div>
   </div>`;
   $("#buildName").value = b.name || "";
 }
 
 function readInput(el) {
   if (el.type === "checkbox") return el.checked;
-  if (el.tagName === "SELECT") return el.value;
+  if (el.tagName === "SELECT") return el.dataset.num ? parseFloat(el.value) : el.value;
   const v = parseFloat(el.value);
   if (!Number.isFinite(v)) return undefined;
   return v * (parseFloat(el.dataset.scale) || 1);
@@ -886,7 +916,7 @@ $("#inputs").addEventListener("input", (e) => {
   const v = readInput(el);
   if (v === undefined) return;
   setPath(S.build, path, v);
-  if (path === "sidewall.material" || path.endsWith(".fiber")) { renderInputs(); }
+  if (path === "sidewall.material" || path.endsWith(".fiber") || path === "process.hardener") { renderInputs(); }
   schedule();
 });
 $("#inputs").addEventListener("change", (e) => {
@@ -958,7 +988,7 @@ function overlayInfo() {
 }
 
 function renderResults() {
-  renderScore(); renderMatch(); renderSection(); renderCharts(); renderAttrs(); renderIssues(); renderLayers();
+  renderScore(); renderMatch(); renderSection(); renderCharts(); renderAttrs(); renderIssues(); renderLayupRead(); renderLayers();
   renderShape();
   renderMiniBar();
   renderBOM();
@@ -1195,10 +1225,10 @@ function strengthsOf(r) {
 
 function renderIssues() {
   const r = S.result;
-  const counts = ["High", "Medium", "Low", "Info"].map((s) => [s, r.issues.filter((i) => i.severity === s).length]).filter(([, n]) => n);
-  $("#issueSub").textContent = counts.length ? counts.map(([s, n]) => `${n} ${s.toLowerCase()}`).join(" · ") : "none";
+  const counts = ["High", "Medium", "Low", "Warning", "Info"].map((s) => [s, r.issues.filter((i) => i.severity === s).length]).filter(([, n]) => n);
+  $("#issueSub").textContent = counts.length ? counts.map(([s, n]) => `${n} ${s.toLowerCase()}${s === "Warning" && n > 1 ? "s" : ""}`).join(" · ") : "none";
   $("#issueView").innerHTML = r.issues.length ? r.issues.map((i) => `<div class="issue ${i.severity}">
-      <div class="t"><span class="chip ${i.severity}">${i.severity}</span>${esc(i.title)} <span class="sub">· ${esc(i.area)}</span></div>
+      <div class="t"><span class="chip ${i.severity}">${i.severity}</span>${esc(i.title)} <span class="sub">· ${esc(i.area)}</span>${i.severity === "Warning" ? ` <span class="nopen">· doesn't lower the score</span>` : ""}</div>
       <p><b>Why it matters:</b> ${esc(i.why)}</p><p><b>Fix:</b> ${esc(i.fix)}</p></div>`).join("") : `<p class="ok">No issues found for this layup.</p>`;
 }
 
@@ -1356,12 +1386,15 @@ const CHANGE_GROUPS = [
   ["Core", ["core"]], ["Fiberglass", ["laminatesTop", "laminatesBottom"]], ["Metal", ["metalTop", "metalBottom"]],
   ["Sides", ["sidewall"]], ["Base", ["base"]], ["Edges", ["edges"]], ["Rubber", ["rubber"]], ["Topsheet", ["topsheet"]],
   ["Shape", ["lengthCm", "tipWidth", "waistWidth", "tailWidth", "waistOffsetCm", "tipContactCm", "tailContactCm", "mountOffsetCm"]],
-  ["Profile", ["camberMm", "tipRockerCm", "tailRockerCm"]], ["Resin & extras", ["vf", "bondGsm", "extrasG"]], ["Press", ["press"]],
+  ["Profile", ["camberMm", "tipRockerCm", "tailRockerCm"]], ["Resin & extras", ["vf", "bondGsm", "extrasG"]], ["Press", ["press"]], ["Process", ["process"]],
 ];
 const KEY_TEXT = {
   waistOffsetCm: (b) => `waist ${U.fmt("lenCm", b.waistOffsetCm, 1)} from center`, tipContactCm: (b) => `tip contact ${U.fmt("lenCm", b.tipContactCm, 0)}`,
   tailContactCm: (b) => `tail contact ${U.fmt("lenCm", b.tailContactCm, 0)}`, mountOffsetCm: (b) => `mount ${U.fmt("lenCm", b.mountOffsetCm, 1)}`,
   edges: (b) => `${U.fmt("thickMm", b.edges.widthMm, 1)} × ${U.fmt("thickMm", b.edges.heightMm, 1)} steel edges`,
+  process: (b) => { const p = { ...E.PROCESS_DEFAULTS, ...(b.process || {}) }, h = E.HARDENERS[p.hardener];
+    return [`metal prep: ${(E.METAL_PREP[p.metalPrep] || E.METAL_PREP.none).name.toLowerCase()}`, h && p.hardener !== "custom" ? `${h.name.split(" (")[0].toLowerCase()} hardener` : `pot life ${p.potLifeMin} min, working ${p.workLifeMin} min`,
+      `shop ${U.fmt("tempC", p.shopTempC)}`, `${p.batches} batch${p.batches == 1 ? "" : "es"}`].join(" · "); },
   vf: (b) => `${Math.round(b.vf * 100)}% fiber`, bondGsm: (b) => `${U.fmt("arealGsm", b.bondGsm)} bond resin`, extrasG: (b) => `${U.fmt("massG", b.extrasG)} extras`,
 };
 function changeGroups(a, b) {
@@ -1385,7 +1418,7 @@ const analyzeB = (b) => Object.assign(E.analyze(b, { units: S.units }), { costUS
 const rawScores = (r) => { const perf = r.fits.reduce((s, f) => s + f.fit, 0) / r.fits.length, q = r.scores.buildQuality; return { perf, q, overall: (perf + q) / 2 }; };
 const flagKey = (i) => i.title.replace(/\(.*?\)/g, "").replace(/[\d.,×%]+/g, "#").trim();
 function flagDiff(ra, rb) {
-  const real = (r) => new Map(r.issues.filter((i) => i.severity !== "Info").map((i) => [flagKey(i), i]));
+  const real = (r) => new Map(r.issues.filter((i) => i.severity !== "Info" && i.severity !== "Warning").map((i) => [flagKey(i), i]));
   const A = real(ra), B = real(rb);
   return { added: [...B].filter(([k, i]) => !A.has(k) || A.get(k).severity !== i.severity).map(([, i]) => i),
     fixed: [...A].filter(([k, i]) => !B.has(k) || B.get(k).severity !== i.severity).map(([, i]) => i) };

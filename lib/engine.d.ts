@@ -3,10 +3,18 @@
 export type Build = Record<string, any> & { name?: string };
 export type Analysis = Record<string, any> & {
   weightG: number; scores: { performance: number; buildQuality: number; overall: number };
-  issues: { severity: "High" | "Medium" | "Low" | "Info"; area: string; title: string; why: string; fix: string }[];
+  issues: { severity: "High" | "Medium" | "Low" | "Warning" | "Info"; area: string; title: string; why: string; fix: string }[];
 };
 export const ENGINE_VERSION: string;
 export const BASE_BUILD: Build;
+export type Process = { metalPrep: "none" | "scuff" | "primer"; hardener: "fast" | "slow" | "xslow" | "custom"; potLifeMin: number; workLifeMin: number; shopTempC: number; batches: number };
+export type LayupPlan = { steps: [string, number][]; total: number; batches: number; perBatch: number; potMin: number; workMin: number; tempC: number; hardener: string; hardenerName: string;
+  overPot: boolean; overWork: boolean; closePot: boolean; closeWork: boolean; batchesNeeded: number };
+export const PROCESS_DEFAULTS: Process;
+export const METAL_PREP: Record<string, { name: string }>;
+export const HARDENERS: Record<string, { name: string; potMin: number | null; workMin: number | null }>;
+export function layupPlan(build: Build): LayupPlan;
+export function metalPrepMissing(build: Build): boolean;
 export const SHEET_DRAFT: Build;
 export const BLANK_BUILD: Build;
 export const REFERENCES: { id: string; source: string; publishedWeightG: number; build: Build }[];

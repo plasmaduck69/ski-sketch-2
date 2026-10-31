@@ -68,3 +68,21 @@ test("materials list covers the layup and adds up", () => {
   const noMetal = E.billOfMaterials(E.BASE_BUILD);
   assert.ok(!noMetal.items.some((i) => i.group === "Metal"));
 });
+
+test("process warnings: metal prep and layup time vs pot life, never a score penalty", () => {
+  const W = (r) => r.issues.filter((i) => i.severity === "Warning").map((i) => i.title);
+  const metal = { ...E.clone(E.BASE_BUILD), press: "pneumatic-cold", metalTop: { material: "al7075", thicknessMm: 0.5, coverage: 1 } };
+  const r0 = E.analyze(metal);
+  assert.ok(W(r0).some((t) => t.startsWith("Metal layer with no surface-prep")));
+  const prepped = E.clone(metal); prepped.process.metalPrep = "primer"; prepped.process.batches = 3;
+  const r1 = E.analyze(prepped);
+  assert.deepEqual(W(r1), []);
+  assert.equal(r0.scores.buildQuality, r1.scores.buildQuality);
+  assert.deepEqual(W(E.analyze(E.BASE_BUILD)), []);
+  for (const ref of E.REFERENCES) assert.deepEqual(W(E.analyze(ref.build)), [], ref.id);
+  const thick = E.clone(E.BASE_BUILD); thick.laminatesBottom[0].plies = 2; thick.laminatesTop[0].plies = 2;
+  assert.equal(E.layupPlan(thick).total - E.layupPlan(E.BASE_BUILD).total, 16);
+  assert.ok(W(E.analyze(thick)).some((t) => t.startsWith("Each epoxy batch")));
+  const hot = E.clone(E.BASE_BUILD); hot.process = { ...hot.process, hardener: "fast", shopTempC: 32, batches: 5 };
+  assert.ok(W(E.analyze(hot)).some((t) => t.includes("working time")));
+});

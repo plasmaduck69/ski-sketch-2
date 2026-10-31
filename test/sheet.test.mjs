@@ -60,3 +60,13 @@ test("every top-ski recipe is a clean design in the engine", () => {
     assert.deepEqual(serious, [], c.key);
   }
 });
+
+test("sheet: process warnings are 0 points and leave Synergy alone", () => {
+  const st = R.defaultState(); st.settings.press = "pneumatic-cold";
+  const metal = { ...E.clone(E.BASE_BUILD), press: "pneumatic-cold", metalTop: { material: "al7075", thicknessMm: 0.5, coverage: 1 } };
+  const plain = R.rate(st), withB = R.rate(st, { build: metal });
+  assert.ok(withB.issues.some((i) => i.name === "Metal surface prep" && i.severity === "Warning"));
+  assert.equal(withB.synergy, plain.synergy);
+  assert.ok(!plain.issues.some((i) => i.severity === "Warning"));
+  assert.match(R.rate(R.defaultState()).status, /0 high, 0 medium, 1 low, 2 info {2}·/);
+});
