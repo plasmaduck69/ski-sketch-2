@@ -51,3 +51,13 @@ test("without an email key, a hosted site says how to set it up and a local one 
   assert.match(printed, /123456/);
   if (saved.key) process.env.RESEND_API_KEY = saved.key; if (saved.vercel) process.env.VERCEL = saved.vercel;
 });
+
+test("finds the database setting under the names Vercel uses", async () => {
+  const { pgUrl } = await import("../lib/db.ts");
+  const u = "postgres://u:p@host/db";
+  assert.equal(pgUrl({ DATABASE_URL: u }), u);
+  assert.equal(pgUrl({ POSTGRES_URL: u }), u);
+  assert.equal(pgUrl({ STORAGE_DATABASE_URL: u, STORAGE_DATABASE_URL_UNPOOLED: "postgres://other" }), u, "custom prefix");
+  assert.equal(pgUrl({ MY_DATABASE_URL: "not a url" }), "");
+  assert.equal(pgUrl({}), "");
+});

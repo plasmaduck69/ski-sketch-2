@@ -72,7 +72,15 @@ const SCHEMA = [
   `CREATE INDEX IF NOT EXISTS login_codes_token ON login_codes(token_hash)`,
 ];
 
-const pgUrl = () => process.env.DATABASE_URL || process.env.POSTGRES_URL || "";
+// Vercel's database connections usually add DATABASE_URL, but they can use other names or a custom
+// prefix (STORAGE_DATABASE_URL, NEON_DATABASE_URL, POSTGRES_URL…), so look for those too.
+export function pgUrl(env: Record<string, string | undefined> = process.env): string {
+  const direct = env.DATABASE_URL || env.POSTGRES_URL || env.NEON_DATABASE_URL || env.POSTGRES_PRISMA_URL;
+  if (direct) return direct;
+  const isPg = (v?: string) => !!v && /^postgres(ql)?:\/\//.test(v);
+  const key = Object.keys(env).sort().find((k) => /_(DATABASE_URL|POSTGRES_URL)$/.test(k) && isPg(env[k]));
+  return key ? env[key]! : "";
+}
 
 async function openPostgres(url: string): Promise<Backend> {
   const { default: postgres } = await import("postgres");
