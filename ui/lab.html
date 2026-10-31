@@ -1,0 +1,2322 @@
+<title>Layup Lab</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #eef0ec; --panel: #ffffff; --panel-2: #f6f7f4; --ink: #192024; --muted: #5a656b; --faint: #8a949a;
+  --line: #d6dbd5; --line-2: #e6e9e4;
+  --accent: #0d7a73; --accent-ink: #ffffff; --accent-soft: #d6eeeb;
+  --ref: #6b4fd0; --ref-soft: #e7e1fb;
+  --high: #b42318; --high-soft: #fde8e6; --med: #a54a07; --med-soft: #fdf0e1; --low: #1d5fbf; --low-soft: #e5eefb; --info: #5a656b; --info-soft: #eceeec;
+  --c-base: #2a2f33; --c-steel: #6c757c; --c-rubber: #11161a; --c-metal: #b8c0c6; --c-side: #8e7f63; --c-top: #d4dbe0;
+  --w-light: #e2c48e; --w-hard: #b07a42; --w-soft: #efdcb6;
+  --f-eglass: #9ad3cc; --f-carbon: #3b4247; --f-flax: #cdb478; --f-basalt: #8a7f74; --f-aramid: #e5c84a;
+  --logo-mtn: #41525b; --logo-snow: #ffffff;
+  --shadow: 0 1px 0 rgba(20, 30, 35, .04), 0 1px 3px rgba(20, 30, 35, .06);
+  --gutter: max(16px, env(safe-area-inset-left));
+  --gutter-r: max(16px, env(safe-area-inset-right));
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #111416; --panel: #191d20; --panel-2: #1f2427; --ink: #e6eae8; --muted: #9ba5aa; --faint: #6f7a80;
+    --line: #2d3438; --line-2: #252b2e;
+    --accent: #4cc2b8; --accent-ink: #0b1514; --accent-soft: #173431;
+    --ref: #a993ff; --ref-soft: #2a2443;
+    --high: #ff8a7f; --high-soft: #3a1d1b; --med: #f4b163; --med-soft: #3a2a17; --low: #8db8ff; --low-soft: #1b2738; --info: #9ba5aa; --info-soft: #252b2e;
+    --c-base: #050607; --c-steel: #8d969c; --c-rubber: #000000; --c-metal: #c7cfd4; --c-side: #9d8e70; --c-top: #5a656c;
+    --w-light: #c9a66b; --w-hard: #95602e; --w-soft: #dcc391;
+    --f-eglass: #5fb3aa; --f-carbon: #0d1012; --f-flax: #b89c5c; --f-basalt: #7a6f64; --f-aramid: #cfb037;
+    --logo-mtn: #8a9ba4; --logo-snow: #eef2f3;
+    --shadow: 0 1px 0 rgba(0, 0, 0, .3);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #111416; --panel: #191d20; --panel-2: #1f2427; --ink: #e6eae8; --muted: #9ba5aa; --faint: #6f7a80;
+  --line: #2d3438; --line-2: #252b2e;
+  --accent: #4cc2b8; --accent-ink: #0b1514; --accent-soft: #173431;
+  --ref: #a993ff; --ref-soft: #2a2443;
+  --high: #ff8a7f; --high-soft: #3a1d1b; --med: #f4b163; --med-soft: #3a2a17; --low: #8db8ff; --low-soft: #1b2738; --info: #9ba5aa; --info-soft: #252b2e;
+  --c-base: #050607; --c-steel: #8d969c; --c-rubber: #000000; --c-metal: #c7cfd4; --c-side: #9d8e70; --c-top: #5a656c;
+  --w-light: #c9a66b; --w-hard: #95602e; --w-soft: #dcc391;
+  --f-eglass: #5fb3aa; --f-carbon: #0d1012; --f-flax: #b89c5c; --f-basalt: #7a6f64; --f-aramid: #cfb037;
+  --logo-mtn: #8a9ba4; --logo-snow: #eef2f3;
+  --shadow: 0 1px 0 rgba(0, 0, 0, .3);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 "IBM Plex Sans", system-ui, sans-serif; }
+button, input, select, textarea { font: inherit; color: inherit; }
+.mono, .num { font-family: "IBM Plex Mono", ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+h1, h2, h3 { font-family: "Archivo", "IBM Plex Sans", sans-serif; margin: 0; letter-spacing: -0.01em; }
+h2 { font-size: 15px; font-weight: 700; }
+h3 { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+a { color: var(--accent); }
+
+/* top bar */
+.top { position: sticky; top: 0; z-index: 20; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px;
+  padding: 10px var(--gutter-r) 10px var(--gutter); background: color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
+.brand { display: flex; align-items: center; gap: 8px; font-family: "Archivo", sans-serif; font-weight: 800; font-size: 16px; white-space: nowrap; }
+.brand svg { width: 26px; height: 26px; }
+.name { flex: 1 1 200px; min-width: 0; font-family: "Archivo", sans-serif; font-weight: 700; font-size: 16px; padding: 6px 8px;
+  border: 1px solid transparent; border-radius: 6px; background: transparent; }
+.name:hover { border-color: var(--line); }
+.name:focus { outline: none; border-color: var(--accent); background: var(--panel); }
+.state { font-size: 12px; color: var(--muted); white-space: nowrap; }
+.state.dirty { color: var(--med); }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.btn { border: 1px solid var(--line); background: var(--panel); border-radius: 6px; padding: 6px 12px; cursor: pointer; font-weight: 500; white-space: nowrap; }
+.btn:hover { border-color: var(--faint); }
+.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.btn.primary:hover { filter: brightness(1.05); }
+.btn.small { padding: 3px 8px; font-size: 12px; }
+.btn.ghost { background: transparent; }
+.btn.danger { color: var(--high); }
+.btn:disabled { opacity: .5; cursor: default; }
+select.pick { border: 1px solid var(--line); background: var(--panel); border-radius: 6px; padding: 6px 8px; max-width: 170px; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; background: var(--panel); }
+.seg button { border: 0; background: transparent; padding: 6px 10px; cursor: pointer; font-weight: 500; color: var(--muted); }
+.seg button + button { border-left: 1px solid var(--line); }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--panel); }
+/* materials */
+.bom td.spec { white-space: normal; color: var(--muted); font-size: 12px; min-width: 160px; text-align: left; }
+.bom thead th:nth-child(2) { text-align: left; }
+.bom td.item { white-space: normal; font-weight: 500; min-width: 140px; }
+.bom td.buy a { font-size: 12px; white-space: nowrap; }
+.bom tr.total td { font-weight: 700; border-top: 1px solid var(--line); }
+.bom .est { color: var(--faint); font-size: 11px; margin-left: 3px; }
+.bom-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
+.bom-total { font-family: "Archivo", sans-serif; font-weight: 800; font-size: 26px; color: var(--accent); }
+/* optimizer */
+.opt-controls { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: end; }
+.opt-controls label { display: grid; gap: 3px; font-size: 12px; color: var(--muted); }
+.opt-controls .in, .opt-controls .sel { min-width: 120px; }
+.locks { display: flex; flex-wrap: wrap; gap: 6px 12px; font-size: 12px; color: var(--muted); align-items: center; }
+.locks label { display: inline-flex; gap: 5px; align-items: center; color: var(--ink); font-size: 13px; }
+.cands { display: grid; gap: 10px; margin-top: 14px; }
+.cand { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
+.cand.base { background: var(--panel-2); border-style: dashed; }
+.cand .ch { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+.cand .ch b { font-family: "Archivo", sans-serif; }
+.cand ul { margin: 6px 0 0; padding-left: 18px; font-size: 13px; }
+.cand li .from { color: var(--faint); text-decoration: line-through; }
+.cand .meta { font-size: 12px; color: var(--muted); }
+.up { color: var(--accent); font-weight: 600; }
+/* tabs + workbook (the planning sheet) */
+[data-pane][hidden] { display: none !important; }
+.tabs { flex-basis: 100%; display: flex; gap: 2px; overflow-x: auto; margin: 0 0 -10px; scrollbar-width: none; }
+.tabs::-webkit-scrollbar { display: none; }
+.tabs a { padding: 7px 12px 9px; color: var(--muted); text-decoration: none; font-weight: 500; white-space: nowrap; border-bottom: 2px solid transparent; }
+.tabs a:hover { color: var(--ink); }
+.tabs a[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--accent); font-weight: 600; }
+:root:not([data-tab="design"]) .resultbar { display: none !important; }
+.wb { padding: 16px var(--gutter-r) 0 var(--gutter); }
+.wb .cols2 { margin: 12px 0; }
+.wb-head { display: flex; justify-content: space-between; gap: 12px 20px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 14px; }
+.wb-head h1 { font-size: 24px; }
+.wb-head p { margin: 4px 0 0; color: var(--muted); max-width: 75ch; }
+.wb-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.presspick { display: grid; gap: 3px; font-size: 12px; color: var(--muted); }
+.pcs { display: flex; gap: 8px; flex-wrap: wrap; }
+.pc { padding: 6px 10px; border-radius: 8px; background: var(--panel-2); font-size: 13px; }
+.pc b { font-family: "Archivo", sans-serif; font-size: 18px; margin-right: 4px; }
+.pc-Yes { background: var(--accent-soft); } .pc-Maybe { background: var(--med-soft); } .pc-No { background: var(--high-soft); }
+.flags { margin: 10px 0 0; padding-left: 18px; font-size: 13px; }
+.flags li + li { margin-top: 4px; }
+.sub2 { color: var(--muted); font-size: 13px; margin: 8px 0 0; }
+.empty { color: var(--muted); }
+.wb table.data th, .wb table.data td { text-align: left; }
+.wb table.data td.num { text-align: right; }
+.wb table.models th.grp { text-align: center; border-bottom: 1px solid var(--line-2); }
+table.data td.wrap { white-space: normal; text-align: left; min-width: 170px; }
+table.data td.small { font-size: 12px; color: var(--muted); }
+table.data td.st { text-align: left; } td.st.ok { color: var(--accent); } td.st.bad { color: var(--high); font-weight: 600; }
+table.data.layers td:first-child { font-weight: 600; }
+.chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.chipbtn { border: 1px solid var(--line); background: var(--panel); border-radius: 999px; padding: 4px 12px; cursor: pointer; font-size: 13px; }
+.chipbtn[aria-pressed="true"] { background: var(--ink); color: var(--panel); border-color: var(--ink); }
+.frow { display: flex; gap: 10px 16px; flex-wrap: wrap; margin-top: 10px; align-items: end; }
+.frow label { display: grid; gap: 3px; font-size: 12px; color: var(--muted); }
+.frow .grow { flex: 1 1 220px; }
+.mat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr)); gap: 12px; margin: 12px 0; }
+.mat { background: var(--panel); border: 1px solid var(--line); border-top: 3px solid var(--line); border-radius: 10px; padding: 12px 14px; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.mat.pick-Yes { border-top-color: var(--accent); } .mat.pick-Maybe { border-top-color: var(--med); } .mat.pick-No { border-top-color: var(--high); }
+.mat header { display: flex; justify-content: space-between; }
+.mat .cat { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 600; }
+.mat .tier { font-family: "IBM Plex Mono", monospace; color: var(--muted); font-size: 12px; }
+.mat h3 { font-size: 17px; text-transform: none; letter-spacing: 0; color: var(--ink); }
+.mat p { margin: 0; font-size: 13px; }
+.mat .role, .prof .role { color: var(--muted); margin: 0 0 4px; font-size: 13px; }
+.meters { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 12px; margin: 2px 0; }
+.meter { display: grid; grid-template-columns: 76px 1fr 18px; gap: 6px; align-items: center; font-size: 11px; color: var(--muted); }
+.meter .mt { height: 5px; background: var(--line-2); border-radius: 3px; overflow: hidden; }
+.meter .mt i { display: block; height: 100%; background: var(--accent); }
+.meter .mv { font-family: "IBM Plex Mono", monospace; color: var(--ink); text-align: right; }
+.pickrow { display: flex; gap: 8px; align-items: center; margin-top: 4px; flex-wrap: wrap; }
+.pickrow .note { flex: 1 1 140px; text-align: left; font-family: "IBM Plex Sans", sans-serif; }
+.pickseg button[aria-pressed="true"][data-v="Yes"] { background: var(--accent); color: var(--accent-ink); }
+.pickseg button[aria-pressed="true"][data-v="Maybe"] { background: var(--med); color: var(--panel); }
+.pickseg button[aria-pressed="true"][data-v="No"] { background: var(--high); color: var(--panel); }
+.mat details summary { cursor: pointer; font-size: 13px; color: var(--accent); }
+.mdl { display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 4px 10px; font-size: 13px; margin: 8px 0; }
+.mdl dt { color: var(--muted); } .mdl dd { margin: 0; }
+.rates { font-size: 13px; }
+.rates .rgrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px 10px; margin-top: 6px; }
+.rates label { display: grid; gap: 2px; font-size: 11px; color: var(--muted); }
+.rates .na { font-size: 13px; color: var(--faint); padding: 4px 0; }
+.linkbtn { border: 0; background: none; color: var(--accent); cursor: pointer; padding: 0; font: inherit; font-size: 13px; text-decoration: underline; }
+.in.w5 { width: 64px; display: inline-block; }
+.track.sm { display: inline-block; width: 90px; height: 6px; margin: 0; vertical-align: middle; }
+table.data tr.total td { font-weight: 700; border-top: 1px solid var(--line); }
+.hl { display: grid; grid-template-columns: minmax(120px, 180px) minmax(0, 1fr); gap: 6px 12px; margin: 0; font-size: 13px; }
+.hl dt { color: var(--muted); } .hl dd { margin: 0; }
+table.models th.grp { text-align: center; }
+table.models td.flag { text-align: center; font-family: "IBM Plex Mono", monospace; }
+td.f-y { color: var(--accent); font-weight: 600; } td.f-q { color: var(--faint); }
+tr.mine td { background: var(--accent-soft); }
+.prof-grid, .press-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr)); gap: 12px; margin-bottom: 12px; }
+.prof-grid > .card + .card, .press-grid > .card + .card { margin-top: 0; }
+.prof.rec { border-color: var(--accent); }
+.press.sel { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-soft); }
+.fit { background: var(--panel-2); padding: 6px 8px; border-radius: 6px; font-size: 13px; margin: 0 0 8px; }
+tr.dim td { opacity: .5; }
+.steps { margin: 0; padding-left: 20px; } .steps li + li { margin-top: 6px; }
+.srcs { list-style: none; margin: 0; padding: 0; columns: 2 380px; column-gap: 28px; }
+.srcs li { break-inside: avoid; padding: 4px 0; font-size: 13px; display: flex; gap: 8px; }
+.sid { font-family: "IBM Plex Mono", monospace; color: var(--muted); min-width: 34px; }
+.inputs { top: calc(var(--hdr, 64px) + 12px) !important; max-height: calc(100vh - var(--hdr, 64px) - 24px) !important; }
+/* projects */
+:root { --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #eda100; --s5: #e87ba4; --s6: #008300; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181; --s6: #008300; } }
+:root[data-theme="dark"] { --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181; --s6: #008300; }
+.tl { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.tl.dash { stroke-dasharray: 5 4; }
+.td { stroke: var(--panel); stroke-width: 2; }
+.td.hollow { fill: var(--panel) !important; stroke-width: 2; }
+.s1.tl, .s1.td.hollow { stroke: var(--s1); } .s1.td { fill: var(--s1); }
+.s2.tl, .s2.td.hollow { stroke: var(--s2); } .s2.td { fill: var(--s2); }
+.s3.tl, .s3.td.hollow { stroke: var(--s3); } .s3.td { fill: var(--s3); }
+.s4.tl, .s4.td.hollow { stroke: var(--s4); } .s4.td { fill: var(--s4); }
+.s5.tl, .s5.td.hollow { stroke: var(--s5); } .s5.td { fill: var(--s5); }
+.s6.tl, .s6.td.hollow { stroke: var(--s6); } .s6.td { fill: var(--s6); }
+.lk { display: inline-block; width: 16px; height: 0; border-top: 2px solid; vertical-align: middle; margin-right: 6px; }
+.lk.s1 { border-color: var(--s1); } .lk.s2 { border-color: var(--s2); } .lk.s3 { border-color: var(--s3); } .lk.s4 { border-color: var(--s4); } .lk.s5 { border-color: var(--s5); } .lk.s6 { border-color: var(--s6); }
+.legend .lk { margin-right: 0; }
+.dl { fill: var(--muted); font: 11px "IBM Plex Sans", sans-serif; }
+.axbest { fill: var(--ink); font-weight: 600; }
+.tip .tt-h { font-weight: 600; margin-bottom: 4px; }
+.tip .tt-r { display: flex; align-items: center; gap: 4px; }
+.tip .tt-c { border-top: 1px solid var(--line-2); margin-top: 6px; padding-top: 4px; color: var(--muted); max-width: 280px; white-space: normal; }
+.tip.trend-tip { max-width: 320px; }
+.proj-layout { display: grid; grid-template-columns: minmax(220px, 300px) minmax(0, 1fr); gap: 12px; align-items: start; }
+@media (max-width: 900px) { .proj-layout { grid-template-columns: minmax(0, 1fr); } }
+.proj-list { display: grid; gap: 8px; }
+.pcard { text-align: left; border: 1px solid var(--line); background: var(--panel); border-radius: 10px; padding: 10px 12px; cursor: pointer; display: grid; gap: 3px; font: inherit; color: inherit; }
+.pcard:hover { border-color: var(--faint); }
+.pcard.sel { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-soft); }
+.pcard .pn { font-weight: 600; }
+.pcard .pm { font-size: 12px; color: var(--muted); }
+.spark { display: block; margin-top: 4px; }
+.spark .sl { fill: none; stroke: var(--s1); stroke-width: 2; stroke-linejoin: round; }
+.spark .sd { fill: var(--s1); stroke: var(--panel); stroke-width: 2; }
+.proj-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 8px; }
+.proj-detail > .card + .card, .proj-detail > .notice + .card { margin-top: 12px; }
+.proj-title { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; align-items: center; }
+input.in.pname { flex: 1 1 220px; text-align: left; font-family: "Archivo", sans-serif; font-weight: 700; font-size: 18px; max-width: 420px; }
+.star { border: 0; background: none; cursor: pointer; font-size: 18px; color: var(--faint); padding: 0 2px; line-height: 1; }
+.star.on { color: var(--med); }
+span.star { cursor: default; font-size: 13px; }
+.chip.best-chip { color: var(--accent); }
+table.iters td { vertical-align: top; }
+table.iters input.in.lbl-in { width: 110px; text-align: left; font-family: "IBM Plex Sans", sans-serif; font-weight: 600; }
+table.iters input.in.note-in { width: 150px; text-align: left; font-family: "IBM Plex Sans", sans-serif; font-size: 12px; margin-top: 4px; display: block; }
+table.iters .acts { white-space: nowrap; }
+table.iters .acts .cmp { display: block; font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+tr.bestrow td { background: color-mix(in srgb, var(--accent-soft) 60%, transparent); }
+.bestword { color: var(--accent); }
+.swsum { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 13px; padding: 8px 10px; background: var(--panel-2); border-radius: 8px; margin-bottom: 4px; }
+.chip.sw-s { color: var(--accent); } .chip.sw-w { color: var(--med); }
+.hit.pick { cursor: pointer; }
+.whylist { margin-top: 14px; border-top: 1px solid var(--line); padding-top: 10px; }
+.whylist h3 { margin: 0 0 6px; font-size: 14px; } .whylist h3 .sub { font-weight: 400; margin-left: 6px; }
+.why-it { border: 1px solid var(--line); border-radius: 8px; margin-top: 6px; background: var(--panel); }
+.why-it.flash { animation: whyflash 1.2s ease-out; }
+@keyframes whyflash { from { box-shadow: 0 0 0 3px var(--accent-soft); border-color: var(--accent); } to { box-shadow: 0 0 0 0 transparent; } }
+.why-sum { display: flex; align-items: baseline; gap: 4px 10px; flex-wrap: wrap; padding: 8px 10px; font-size: 13px; }
+summary.why-sum { cursor: pointer; list-style: none; }
+summary.why-sum::-webkit-details-marker { display: none; }
+summary.why-sum::before { content: ""; width: 7px; height: 7px; border-right: 2px solid var(--muted); border-bottom: 2px solid var(--muted); transform: rotate(-45deg); margin-right: 2px; align-self: center; transition: transform .15s; }
+.why-it[open] > summary.why-sum::before { transform: rotate(45deg); }
+.why-it.first .why-sum { padding-left: 25px; }
+.why-sum .wl { font-weight: 600; min-width: 48px; }
+.why-sum .num { font-size: 14px; }
+.why-body { padding: 0 12px 12px 26px; font-size: 13px; }
+.why-body .whyhead { margin: 0 0 4px; font-size: 14px; }
+.why-body .lead { margin: 0 0 6px; }
+.whylist-ul { margin: 0 0 8px; padding-left: 18px; color: var(--ink); } .whylist-ul li { margin: 2px 0; }
+.why-body h4 { margin: 10px 0 6px; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+.effs { display: grid; gap: 6px; }
+.eff { border-left: 3px solid var(--line); padding: 2px 0 2px 10px; }
+.eff-h { display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+.eff-ft { color: var(--muted); } .eff-ft .arrow { color: var(--faint); }
+.eff-m { font-size: 12px; margin-top: 2px; }
+.delta { font-weight: 600; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.delta.good { color: var(--accent); } .delta.bad { color: var(--high); } .delta.flat { color: var(--muted); font-weight: 400; }
+.why-body .chip { margin: 0 4px 0 2px; }
+/* top skis 2026/27 */
+.chip.yr { color: var(--accent); } .chip.est { color: var(--muted); }
+.chip.award { color: var(--low); text-decoration: none; font-weight: 600; }
+.topintro .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.topcat { margin-top: 12px; scroll-margin-top: calc(var(--hdr, 110px) + 10px); }
+.mixcard { margin-top: 12px; scroll-margin-top: calc(var(--hdr, 110px) + 10px); }
+.topcat .shared { background: var(--panel-2); border-radius: 8px; padding: 8px 12px; margin: 4px 0 8px; }
+.topcat h4, .pick h4 { margin: 0 0 4px; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+.topcat .shared ul, .pick ul.keys { margin: 0; padding-left: 18px; } .topcat .shared li, .pick ul.keys li { margin: 2px 0; }
+.picks { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 330px), 1fr)); gap: 10px; margin-top: 8px; }
+.pick { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; background: var(--panel); }
+.pick-h { display: flex; gap: 10px; align-items: flex-start; }
+.pick-h h3 { margin: 0; font-size: 15px; text-transform: none; letter-spacing: 0; }
+.pick .rk { flex: none; width: 26px; height: 26px; border-radius: 50%; background: var(--accent-soft); color: var(--accent); display: grid; place-items: center; font-weight: 700; font-size: 13px; }
+.pick-score { margin-left: auto; text-align: right; display: grid; } .pick-score .num { font-size: 18px; }
+.pick .spec, .pick .cons { margin: 0; font-size: 12.5px; color: var(--muted); }
+.pick .cons { color: var(--ink); }
+.pick ul.keys { font-size: 13px; }
+.pick .trade { margin: 0; font-size: 12.5px; color: var(--med); }
+.pick .chips { display: flex; flex-wrap: wrap; gap: 4px; }
+.pick-f { margin-top: auto; display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: baseline; border-top: 1px solid var(--line); padding-top: 6px; font-size: 12px; }
+.pick-f a { margin-left: auto; }
+.recipe { margin-top: 12px; border-top: 1px solid var(--line); padding-top: 10px; }
+.recipe h3 { margin: 0 0 6px; font-size: 15px; }
+table.rec td { vertical-align: top; } table.rec td:first-child { white-space: nowrap; }
+.pred { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 13px; padding: 8px 10px; background: var(--panel-2); border-radius: 8px; margin: 4px 0 10px; }
+.pred .warnc { color: var(--med); }
+table.mixcmp .up { color: var(--accent); font-size: 11px; } table.mixcmp .down { color: var(--high); font-size: 11px; }
+table.mix select { min-width: 160px; }
+/* settings */
+.acct { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; font-size: 13px; }
+.acct b { font-weight: 600; word-break: break-all; }
+.set-group[hidden] { display: none; }
+.setbtn { display: inline-flex; align-items: center; gap: 6px; }
+.setbtn .pillm { font-size: 11px; font-weight: 600; padding: 1px 7px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); }
+.settings { position: fixed; z-index: 40; top: calc(var(--hdr, 64px) + 4px); right: var(--gutter-r); width: min(380px, calc(100vw - 32px)); background: var(--panel); border: 1px solid var(--line); border-radius: 12px;
+  box-shadow: 0 12px 40px rgba(10, 20, 25, .18); padding: 14px 16px 16px; }
+.settings[hidden] { display: none; }
+@media (max-width: 1000px) { .settings { top: 12px; } }
+.set-h { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.set-group { margin-top: 14px; }
+.set-group h3 { margin-bottom: 8px; }
+.opt-card { display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: start; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; cursor: pointer; }
+.opt-card + .opt-card { margin-top: 8px; }
+.opt-card:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); }
+.opt-card input { margin-top: 3px; accent-color: var(--accent); }
+.opt-card b { display: block; }
+.opt-card small { color: var(--muted); font-size: 12px; }
+:root[data-mode="simple"] .adv { display: none !important; }
+:root:not([data-mode="simple"]) .simple-only { display: none !important; }
+
+/* simple mode */
+.sfield + .sfield { margin-top: 14px; }
+.slabel { display: flex; justify-content: space-between; gap: 8px; font-weight: 600; margin-bottom: 4px; }
+.sword { font-weight: 600; color: var(--accent); }
+.sdesc { margin: 4px 0 0; font-size: 12px; color: var(--muted); }
+.range { width: 100%; accent-color: var(--accent); }
+.range-ends { display: flex; justify-content: space-between; gap: 8px; font-size: 11px; color: var(--faint); }
+.range-ends span:nth-child(2) { color: var(--muted); font-family: "IBM Plex Mono", monospace; }
+.sum-top { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 16px; align-items: center; }
+.sum-score { background: var(--accent-soft); border-radius: 10px; padding: 10px 16px; text-align: center; }
+.sum-score .k { display: block; font-size: 12px; color: var(--muted); }
+.sum-score .v { font-family: "Archivo", sans-serif; font-weight: 800; font-size: 40px; line-height: 1; color: var(--accent); }
+.sum-score .v small { font-size: 15px; color: var(--faint); }
+.verdict { margin: 0; font-family: "Archivo", sans-serif; font-weight: 700; font-size: 19px; }
+.verdict.high { color: var(--high); } .verdict.med { color: var(--med); }
+.sum-sub { margin: 4px 0 0; color: var(--muted); }
+.chips2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; margin-top: 14px; }
+.chip2 { background: var(--panel-2); border-radius: 8px; padding: 8px 10px; }
+.chip2 .k { display: block; font-size: 11px; color: var(--muted); }
+.chip2 b { display: block; font-size: 15px; }
+.chip2 .sub { font-size: 12px; }
+.ride { display: grid; gap: 12px; }
+.ride-row .top-line { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; }
+.ride-row .phrase { font-weight: 600; }
+.ride-row .an { font-size: 12px; color: var(--muted); }
+.fixes { display: grid; gap: 8px; }
+.fix { border-left: 3px solid var(--info); background: var(--info-soft); border-radius: 0 8px 8px 0; padding: 8px 10px; }
+.fix.High { border-color: var(--high); background: var(--high-soft); } .fix.Medium { border-color: var(--med); background: var(--med-soft); } .fix.Low { border-color: var(--low); background: var(--low-soft); }
+.fix .t { font-weight: 600; }
+.fix p { margin: 4px 0 0; font-size: 13px; }
+.fix details { margin-top: 4px; font-size: 12px; color: var(--muted); }
+.fix summary { cursor: pointer; color: var(--accent); }
+.tips { margin-top: 10px; font-size: 13px; }
+.tips summary { cursor: pointer; font-weight: 600; }
+.tips ul { margin: 6px 0 0; padding-left: 18px; color: var(--muted); }
+.notice { margin: 10px var(--gutter-r) 0 var(--gutter); padding: 8px 12px; border-radius: 6px; background: var(--low-soft); color: var(--ink); font-size: 13px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.notice[hidden] { display: none; }
+
+/* layout */
+.grid { display: grid; grid-template-columns: minmax(360px, 440px) minmax(0, 1fr); gap: 16px; padding: 16px var(--gutter-r) 0 var(--gutter); align-items: start; }
+@media (max-width: 1000px) { .grid { grid-template-columns: minmax(0, 1fr); } }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; box-shadow: var(--shadow); padding: 14px 16px; min-width: 0; }
+.card + .card { margin-top: 12px; }
+.card > header { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
+.sub { color: var(--muted); font-size: 12px; }
+.cols2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 1250px) { .cols2 { grid-template-columns: minmax(0, 1fr); } }
+.cols2 > .card + .card { margin-top: 0; }
+.results > .cols2 + .card, .results > .card + .cols2 { margin-top: 12px; }
+
+/* input sheets */
+.inputs { position: sticky; top: 64px; max-height: calc(100vh - 76px); overflow: auto; padding-bottom: 16px; }
+@media (max-width: 1000px) { .inputs { position: static; max-height: none; overflow: visible; } }
+table.sheet { width: 100%; border-collapse: collapse; }
+table.sheet th, table.sheet td { padding: 4px 6px; border-bottom: 1px solid var(--line-2); vertical-align: middle; text-align: left; }
+table.sheet th { font-weight: 500; color: var(--ink); width: 52%; }
+table.sheet th small { display: block; font-weight: 400; color: var(--faint); font-size: 11px; line-height: 1.25; }
+table.sheet td.u { color: var(--muted); font-size: 12px; width: 40px; }
+table.sheet tr:last-child th, table.sheet tr:last-child td { border-bottom: 0; }
+.in { width: 100%; min-width: 0; border: 1px solid var(--line); border-radius: 5px; padding: 4px 6px; background: var(--panel-2); font-family: "IBM Plex Mono", monospace; font-size: 13px; text-align: right; }
+.in:focus, .sel:focus { outline: none; border-color: var(--accent); background: var(--panel); box-shadow: 0 0 0 3px var(--accent-soft); }
+.sel { width: 100%; min-width: 0; border: 1px solid var(--line); border-radius: 5px; padding: 4px 4px; background: var(--panel-2); font-size: 13px; }
+.layer { border: 1px solid var(--line-2); border-radius: 8px; padding: 8px 10px; margin-top: 8px; background: var(--panel); }
+.layer .lh { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.layer .lh b { font-weight: 600; flex: 1; }
+.swatch { width: 12px; height: 12px; border-radius: 3px; border: 1px solid rgba(0,0,0,.15); flex: none; display: inline-block; }
+.row { display: grid; gap: 6px; align-items: center; }
+.row.fab { grid-template-columns: minmax(0, 1.05fr) minmax(0, 1.25fr) minmax(58px, .8fr) minmax(42px, .5fr) auto; }
+.row.wood { grid-template-columns: 1fr 70px 18px auto; }
+.row.three { grid-template-columns: 1fr 1fr 1fr; }
+.row.two { grid-template-columns: 1fr 1fr; }
+.row + .row { margin-top: 6px; }
+.lbl { font-size: 11px; color: var(--muted); display: block; margin-bottom: 2px; }
+.hint { font-size: 11px; color: var(--faint); }
+.x { border: 0; background: transparent; color: var(--faint); cursor: pointer; font-size: 16px; line-height: 1; padding: 2px 4px; border-radius: 4px; }
+.x:hover { color: var(--high); background: var(--high-soft); }
+.add { margin-top: 6px; border: 1px dashed var(--line); background: transparent; border-radius: 6px; padding: 4px 8px; font-size: 12px; color: var(--accent); cursor: pointer; }
+.add:hover { border-color: var(--accent); }
+.check { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }
+.coreline { font-size: 12px; color: var(--muted); padding: 6px 2px; }
+.group-title { display: flex; justify-content: space-between; align-items: baseline; margin: 14px 0 0; }
+.group-title:first-child { margin-top: 0; }
+
+/* scoreboard */
+.scores { display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 10px; }
+@media (max-width: 640px) { .scores { grid-template-columns: minmax(0, 1fr); } }
+.score { border-radius: 8px; background: var(--panel-2); padding: 10px 12px; }
+.score .k { font-size: 12px; color: var(--muted); display: block; }
+.score .v { font-family: "Archivo", sans-serif; font-weight: 800; font-size: 30px; line-height: 1.1; }
+.score .v small { font-size: 14px; color: var(--faint); font-weight: 600; }
+.score.main { background: var(--accent-soft); }
+.score.main .v { color: var(--accent); font-size: 36px; }
+.score .d { display: block; font-size: 12px; color: var(--muted); }
+.stats { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px 14px; margin: 14px 0 0; }
+.stats div { border-top: 1px solid var(--line-2); padding-top: 6px; }
+.stats dt { font-size: 11px; color: var(--muted); }
+.stats dd { margin: 0; font-family: "IBM Plex Mono", monospace; font-size: 15px; font-weight: 500; }
+.stats dd small { font-size: 11px; color: var(--faint); }
+
+/* match */
+.match-top { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.match-top .big { font-family: "Archivo", sans-serif; font-weight: 800; font-size: 20px; }
+.simlist { margin-top: 10px; display: grid; gap: 4px; }
+.sim { display: grid; grid-template-columns: minmax(0, 1fr) 120px 48px; gap: 8px; align-items: center; font-size: 13px; }
+.sim .bar { height: 6px; background: var(--line-2); border-radius: 3px; overflow: hidden; }
+.sim .bar i { display: block; height: 100%; background: var(--ref); border-radius: 3px; }
+
+/* charts */
+.chart { position: relative; }
+.chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+.legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 12px; color: var(--muted); margin: 2px 0 4px; }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.legend i { width: 18px; height: 0; border-top: 2.5px solid var(--accent); display: inline-block; }
+.legend i.ref { border-top: 2.5px dashed var(--ref); }
+.tip { position: absolute; pointer-events: none; background: var(--panel); border: 1px solid var(--line); box-shadow: var(--shadow); border-radius: 6px; padding: 6px 8px; font-size: 12px; white-space: nowrap; transform: translate(-50%, -100%); z-index: 2; }
+.tip[hidden] { display: none; }
+.ax { stroke: var(--line); stroke-width: 1; }
+.gridl { stroke: var(--line-2); stroke-width: 1; }
+.axt { fill: var(--muted); font: 11px "IBM Plex Mono", monospace; }
+.axl { fill: var(--muted); font: 11px "IBM Plex Sans", sans-serif; }
+.s-build { stroke: var(--accent); fill: none; stroke-width: 2.25; }
+.s-ref { stroke: var(--ref); fill: none; stroke-width: 2; stroke-dasharray: 6 4; }
+.a-build { fill: var(--accent); opacity: .12; }
+.mark { stroke: var(--faint); stroke-dasharray: 2 3; }
+.markt { fill: var(--faint); font: 10px "IBM Plex Sans", sans-serif; }
+.cross { stroke: var(--muted); stroke-width: 1; }
+.dot-b { fill: var(--accent); } .dot-r { fill: var(--ref); }
+.ski-out { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 1.5; }
+.ski-ref { fill: none; stroke: var(--ref); stroke-width: 1.25; stroke-dasharray: 5 4; }
+.prof-total { fill: var(--c-top); }
+.prof-core { fill: var(--w-light); }
+.contact { fill: var(--panel); stroke: var(--ink); stroke-width: 1.5; }
+
+/* cross-section */
+.xsec { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(170px, 1fr); gap: 14px; align-items: start; }
+@media (max-width: 640px) { .xsec { grid-template-columns: minmax(0, 1fr); } }
+.g-base { fill: var(--c-base); } .g-edges { fill: var(--c-steel); } .g-rubber { fill: var(--c-rubber); }
+.g-metal { fill: var(--c-metal); } .g-sidewall { fill: var(--c-side); } .g-topsheet { fill: var(--c-top); }
+.f-eglass { fill: var(--f-eglass); } .f-carbon { fill: var(--f-carbon); } .f-flax { fill: var(--f-flax); } .f-basalt { fill: var(--f-basalt); } .f-aramid { fill: var(--f-aramid); }
+.w-light { fill: var(--w-light); } .w-hard { fill: var(--w-hard); } .w-soft { fill: var(--w-soft); }
+.xsec svg rect { stroke: var(--panel); stroke-width: .5; }
+.stack { list-style: none; margin: 0; padding: 0; font-size: 12px; }
+.stack li { display: grid; grid-template-columns: 14px minmax(0, 1fr) auto; gap: 8px; align-items: center; padding: 3px 0; border-bottom: 1px solid var(--line-2); }
+.stack li:last-child { border-bottom: 0; }
+.stack .num { color: var(--muted); }
+.stack .tot { font-weight: 600; }
+
+/* bars */
+.bars { display: grid; gap: 10px; }
+.bar-row .top-line { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; }
+.bar-row .nm { font-weight: 500; }
+.bar-row .val { font-family: "IBM Plex Mono", monospace; font-weight: 500; }
+.bar-row .val small { color: var(--ref); font-weight: 400; margin-left: 6px; }
+.track { position: relative; height: 8px; border-radius: 4px; background: var(--line-2); margin: 4px 0 3px; }
+.track .fill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 4px; background: var(--accent); }
+.track .refm { position: absolute; top: -3px; width: 3px; height: 14px; margin-left: -1.5px; background: var(--ref); border-radius: 2px; }
+.why { font-size: 12px; color: var(--muted); }
+
+/* issues */
+.issues { display: grid; gap: 8px; }
+.issue { border-left: 3px solid var(--info); background: var(--info-soft); border-radius: 0 6px 6px 0; padding: 8px 10px; }
+.issue.High { border-color: var(--high); background: var(--high-soft); }
+.issue.Medium { border-color: var(--med); background: var(--med-soft); }
+.issue.Low { border-color: var(--low); background: var(--low-soft); }
+.issue .t { font-weight: 600; }
+.chip { display: inline-block; font-size: 11px; font-weight: 600; padding: 1px 6px; border-radius: 10px; margin-right: 6px; background: var(--panel); border: 1px solid currentColor; }
+.chip.High { color: var(--high); } .chip.Medium { color: var(--med); } .chip.Low { color: var(--low); } .chip.Info { color: var(--info); }
+.issue p { margin: 4px 0 0; font-size: 13px; }
+.issue p b { font-weight: 600; }
+.ok { color: var(--muted); }
+
+/* tables */
+.tbl-wrap { overflow-x: auto; }
+table.data { width: 100%; border-collapse: collapse; font-size: 13px; }
+table.data th, table.data td { padding: 5px 8px; border-bottom: 1px solid var(--line-2); text-align: right; white-space: nowrap; }
+table.data th:first-child, table.data td:first-child { text-align: left; }
+table.data thead th { font-weight: 600; color: var(--muted); font-size: 12px; border-bottom: 1px solid var(--line); vertical-align: bottom; white-space: normal; }
+table.data td.num, table.data td .num { font-family: "IBM Plex Mono", monospace; }
+table.data tr.sect td { font-weight: 600; color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: .05em; padding-top: 12px; text-align: left; }
+table.data .best { color: var(--accent); font-weight: 600; }
+.minibar { display: inline-block; height: 6px; border-radius: 3px; background: var(--accent); vertical-align: middle; margin-right: 6px; opacity: .8; }
+
+/* builds */
+.wide { padding: 16px var(--gutter-r) 0 var(--gutter); }
+.builds { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: 12px; align-items: start; }
+@media (max-width: 1000px) { .builds { grid-template-columns: minmax(0, 1fr); } }
+.builds > .card + .card { margin-top: 0; }
+.blist { display: grid; gap: 6px; }
+.bitem { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 8px 10px; border: 1px solid var(--line-2); border-radius: 8px; }
+.bitem.current { border-color: var(--accent); background: var(--accent-soft); }
+.bitem .bn { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bitem .bm { font-size: 12px; color: var(--muted); }
+.bitem .ba { display: flex; gap: 4px; flex-wrap: wrap; justify-content: flex-end; }
+.bitem input.in { text-align: left; font-family: "IBM Plex Sans", sans-serif; }
+.empty { color: var(--muted); font-size: 13px; padding: 10px 0; }
+.reflist { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.pill { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px 3px 8px; border: 1px solid var(--line); border-radius: 999px; font-size: 12px; cursor: pointer; background: var(--panel); }
+.pill:has(input:checked) { border-color: var(--ref); background: var(--ref-soft); }
+.pill input { margin: 0; }
+
+/* method */
+details.method { margin: 16px var(--gutter-r) 0 var(--gutter); }
+details.method summary, details.json summary { cursor: pointer; font-weight: 600; }
+details.method .body { columns: 2 320px; column-gap: 28px; margin-top: 10px; }
+details.method .body p { margin: 0 0 10px; break-inside: avoid; color: var(--ink); }
+details.method .body h3 { margin: 4px 0 6px; break-after: avoid; }
+textarea.json { width: 100%; min-height: 160px; font: 12px/1.4 "IBM Plex Mono", monospace; border: 1px solid var(--line); border-radius: 6px; background: var(--panel-2); padding: 8px; margin-top: 8px; }
+footer { padding: 16px var(--gutter-r) 32px var(--gutter); color: var(--faint); font-size: 12px; }
+.in::-webkit-outer-spin-button, .in::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.in[type=number] { -moz-appearance: textfield; appearance: textfield; }
+.resultbar { display: none; }
+@media (max-width: 1000px) {
+  .top { position: static; }
+  .resultbar { display: flex; position: fixed; left: 0; right: 0; bottom: 0; z-index: 30; gap: 12px; align-items: center; justify-content: space-between;
+    padding: 8px var(--gutter-r) calc(8px + env(safe-area-inset-bottom)) var(--gutter); background: var(--panel); border-top: 1px solid var(--line); font-size: 13px; }
+  .resultbar { text-decoration: none; color: var(--ink); }
+  .resultbar > span { white-space: nowrap; }
+  .resultbar .num { overflow: hidden; text-overflow: ellipsis; min-width: 0; flex: 1; text-align: center; }
+  .resultbar b { font-family: "Archivo", sans-serif; font-size: 18px; color: var(--accent); }
+  .resultbar .num { font-size: 12px; color: var(--muted); }
+  footer { padding-bottom: 72px; }
+}
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+</style>
+
+<header class="top">
+  <div class="brand" aria-label="Layup Lab">
+    <svg viewBox="0 0 32 32" aria-hidden="true"><g transform="translate(16 15)"><g transform="scale(-1 1) rotate(-45)"><path d="M-14 -1.5 H10.5 Q15.6 -1.5 15.6 -3.4 Q16.8 0 13 1.5 H-14 Z" style="fill:var(--w-hard)"/></g><g transform="rotate(-45)"><path d="M-14 -1.5 H10.5 Q15.6 -1.5 15.6 -3.4 Q16.8 0 13 1.5 H-14 Z" style="fill:var(--accent)"/></g></g><path d="M0.5 30.5 L11 15.8 L14.6 20.2 L20.6 11.8 L31.5 30.5 Z" style="fill:var(--logo-mtn)"/><path d="M11 15.8 L13.3 18.8 L12.1 18.3 L11 19.6 L9.8 17.5 Z" style="fill:var(--logo-snow)"/><path d="M20.6 11.8 L23.6 17 L22.1 16.3 L20.7 17.8 L19.3 16.2 L17.8 16.6 Z" style="fill:var(--logo-snow)"/></svg>
+    <span>Layup Lab</span>
+  </div>
+  <input id="buildName" class="name" aria-label="Project name" maxlength="80" placeholder="Untitled project">
+  <span id="saveState" class="state" aria-live="polite"></span>
+  <div class="actions">
+    <button id="settingsBtn" class="btn setbtn" aria-expanded="false" aria-controls="settings">⚙ Settings <span class="pillm" id="modePill"></span></button>
+    <button id="newBtn" class="btn" title="Start a new project from a blank design">+ New project</button>
+    <select id="startFrom" class="pick" aria-label="Start from a preset"></select>
+    <button id="saveBtn" class="btn primary">Save v1</button>
+    <button id="saveAsBtn" class="btn" title="Copy this design into a new project as its v1">Save as new project</button>
+  </div>
+  <nav class="tabs" id="tabs" role="tablist" aria-label="Sections"></nav>
+</header>
+<div class="settings" id="settings" role="dialog" aria-label="Settings" hidden>
+  <div class="set-h"><h2>Settings</h2><button class="x" id="settingsClose" aria-label="Close settings">×</button></div>
+  <div class="set-group"><h3>View</h3>
+    <label class="opt-card"><input type="radio" name="viewMode" value="detailed"><span><b>Detailed</b><small>Every number, chart and layer, for optimizing a layup.</small></span></label>
+    <label class="opt-card"><input type="radio" name="viewMode" value="simple"><span><b>Simple</b><small>Plain-language choices and results. Same physics underneath, and you can switch back any time.</small></span></label>
+  </div>
+  <div class="set-group"><h3>Units</h3><div class="seg" id="unitSeg" role="group" aria-label="Units"><button type="button" data-units="metric">Metric</button><button type="button" data-units="us">US</button></div></div>
+  <div class="set-group" id="acct" hidden><h3>Account</h3><div class="acct"><span>Signed in as <b id="acctEmail"></b></span><button id="logoutBtn" class="btn small">Log out</button></div></div>
+  <div class="set-group" id="guestAcct" hidden><h3>Account</h3><div class="acct"><span>You're a guest: projects save in this browser only.</span><a class="btn small primary" href="/login?next=/lab">Create a free account</a></div></div>
+  <div class="set-group"><h3>Theme</h3><div class="seg" id="themeSeg" role="group" aria-label="Theme"><button type="button" data-theme-set="auto">Auto</button><button type="button" data-theme-set="light">Light</button><button type="button" data-theme-set="dark">Dark</button></div></div>
+</div>
+<div id="notice" class="notice" hidden></div>
+<a class="resultbar" id="miniBar" href="#results" aria-label="Jump to results"></a>
+
+<div data-pane="design">
+<main class="grid">
+  <section class="inputs" id="inputs" aria-label="Build inputs"></section>
+  <section class="results" id="results" aria-label="Results" style="scroll-margin-top:12px">
+    <div id="simpleView" class="simple-only" style="scroll-margin-top:12px"></div>
+    <div class="card adv" id="scoreCard" style="scroll-margin-top:12px"></div>
+    <div class="card adv" id="matchCard"></div>
+    <div class="card"><header><h2>Shape</h2><span class="sub" id="shapeSub"></span></header><div id="shapeView" class="chart"></div></div>
+    <div class="card adv"><header><h2>Cross-section under the boot</h2><span class="sub">height drawn ×3</span></header><div id="sectionView" class="xsec"></div></div>
+    <div class="card adv"><header><h2>Stiffness along the ski</h2><span class="sub">tail → tip · hover for values</span></header>
+      <div id="eiChart" class="chart"></div><div id="gjChart" class="chart" style="margin-top:14px"></div></div>
+    <div class="cols2 adv">
+      <div class="card"><header><h2>Ride attributes</h2><span class="sub">1–5</span></header><div id="attrView" class="bars"></div></div>
+      <div class="card"><header><h2>Use-case fit</h2><span class="sub">0–10 · all six count equally</span></header><div id="fitView" class="bars"></div></div>
+    </div>
+    <div class="card adv"><header><h2>Issues</h2><span class="sub" id="issueSub"></span></header><div id="issueView" class="issues"></div></div>
+    <div class="card" id="optCard"><header><h2>Optimizer</h2><span class="sub">searches core wood, thickness, fiberglass, metal and sides</span></header>
+      <div class="opt-controls">
+        <label>Goal<select class="sel" id="optGoal"></select></label>
+        <label class="adv">Max weight per ski <span id="optMaxWrap"></span></label>
+        <button class="btn primary" id="optRun">Find better layups</button>
+      </div>
+      <div class="locks adv" style="margin-top:10px">Keep as is: <span id="optLocks"></span></div>
+      <div id="optOut"></div>
+    </div>
+    <div class="card" id="bomCard"><header><h2>Materials &amp; cost</h2><span class="sub">for one pair</span></header><div id="bomView"></div></div>
+    <div class="card adv"><header><h2>Where the weight and stiffness come from</h2><span class="sub">by layer group</span></header><div id="layerView" class="tbl-wrap"></div></div>
+  </section>
+</main>
+
+<section class="wide" id="builds" aria-label="Saved builds and comparison">
+  <div class="builds">
+    <div class="card">
+      <header><h2 id="projCardTitle">Project</h2><span class="sub" id="storeMode"></span></header>
+      <div id="projCardBody"></div>
+      <div id="migrate"></div>
+    </div>
+    <div class="card">
+      <header><h2>Compare</h2><span class="sub">tick iterations on the left, or add production skis</span></header>
+      <div class="reflist" id="refPicks"></div>
+      <div id="compareView" class="tbl-wrap" style="margin-top:12px"></div>
+    </div>
+  </div>
+</section>
+
+<details class="method card">
+  <summary>How the engine works (and what it can't tell you)</summary>
+  <div class="body">
+    <h3>Slicing the ski</h3>
+    <p>The ski is cut into 241 cross-sections from tail to tip. Each one gets its real width (from the sidecut circle through the tail contact, waist and tip contact) and its core thickness (from your taper), then the full stack: base, steel edges, rubber, laminates, metal, core with sidewalls and topsheet.</p>
+    <h3>Stiffness</h3>
+    <p>Bending stiffness (EI) uses the transformed-section method: every layer's modulus times its area and its distance from the neutral axis squared. Layers far from the middle (laminates, metal, edges) matter most, which is why a 0.5&nbsp;mm metal sheet can add as much stiffness as millimeters of wood. Torsional stiffness (GJ) comes from each layer's shear modulus and its distance from the middle, the same way.</p>
+    <h3>Fabrics</h3>
+    <p>Each fabric's areal weight is turned into cured thickness using fiber density and fiber volume fraction (Vf). Its stiffness comes from micromechanics (rule of mixtures and Halpin–Tsai) and classical lamination theory over the ply angles. ±45° plies add little bending stiffness but most of the torsional stiffness, so triax and biax control edge hold.</p>
+    <h3>Whole-ski numbers</h3>
+    <p>Center flex is a three-point bend between the camber contact points. The first vibration mode uses the Rayleigh method. Damping is the strain energy each layer stores in that mode times its loss factor, plus a constrained-layer term for rubber sitting under stiff layers. "Carve energy" is the energy stored bending the running length from its cambered shape into a 15&nbsp;m arc, which is what the ski gives back at the end of a carved turn.</p>
+    <h3>Scores</h3>
+    <p>Attributes (1–5) place these physics numbers on ranges set by six production skis, modeled with their published dimensions and weight. Use-case fits use the same attribute weights as your planning sheet. Performance is the plain average of the six fits: every use case counts equally, so a weak spot can't hide behind a strong one. On the Projects tab, each iteration's "what changed and why" tests every change on its own against the version it came from. Build quality starts at 10 and loses 2 / 1 / 0.4 for each High / Medium / Low issue. Overall is the average of Performance and Build quality.</p>
+    <h3>Limits</h3>
+    <p>Material values are textbook averages (USDA Wood Handbook, manufacturer data sheets); real wood varies by about ±20%. Production layups are approximations of the published construction, with the underfoot core thickness solved so the modeled weight matches the published weight. Use the numbers to compare designs against each other, not as exact predictions. Damping is the least certain output.</p>
+    <h3>Sources</h3>
+    <p><a href="https://www.fpl.fs.usda.gov/documnts/fplgtr/fplgtr282/fplgtr282.pdf" target="_blank" rel="noopener">USDA Wood Handbook (FPL-GTR-282)</a> for wood stiffness and density. Production ski specs: <span id="refSources"></span>.</p>
+  </div>
+</details>
+
+<details class="method card json adv" id="jsonBox">
+  <summary>Build file (JSON) — copy it out or paste one in</summary>
+  <textarea class="json" id="jsonText" spellcheck="false" aria-label="Build JSON"></textarea>
+  <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;align-items:center">
+    <button class="btn small" id="jsonCopy">Copy</button>
+    <button class="btn small" id="jsonApply">Load this JSON</button>
+    <span class="sub" id="jsonMsg"></span>
+  </div>
+</details>
+</div>
+<div data-pane="projects" class="wb" hidden></div>
+<div data-pane="materials" class="wb" hidden></div>
+<div data-pane="rating" class="wb" hidden></div>
+<div data-pane="models" class="wb" hidden></div>
+<div data-pane="top" class="wb" hidden></div>
+<div data-pane="profiles" class="wb" hidden></div>
+<div data-pane="press" class="wb" hidden></div>
+<div data-pane="tuning" class="wb" hidden></div>
+<div data-pane="sources" class="wb" hidden></div>
+<div data-pane="guide" class="wb" hidden></div>
+<footer>Layup Lab · physics engine <span id="engineVer"></span> · a design tool, not a substitute for testing a real ski.</footer>
+
+<script type="module">
+import * as E from "./engine.js";
+import { initWorkbook } from "./sheet-ui.js";
+
+// ------------------------------------------------------------------ helpers
+const $ = (s, el = document) => el.querySelector(s);
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const fmt = (x, d = 0) => Number.isFinite(x) ? x.toLocaleString(undefined, { minimumFractionDigits: d, maximumFractionDigits: d }) : "—";
+const clone = (o) => JSON.parse(JSON.stringify(o));
+const getPath = (o, p) => p.split(".").reduce((a, k) => (a == null ? a : a[k]), o);
+const setPath = (o, p, v) => { const ks = p.split("."); const last = ks.pop(); const t = ks.reduce((a, k) => a[k], o); t[last] = v; };
+const isObj = (x) => x && typeof x === "object" && !Array.isArray(x);
+const deepMerge = (base, over) => {
+  const out = clone(base);
+  for (const [k, v] of Object.entries(over || {})) out[k] = isObj(v) && isObj(out[k]) ? deepMerge(out[k], v) : clone(v);
+  return out;
+};
+const normalizeBuild = (b) => deepMerge(E.BASE_BUILD, b || {});
+const newId = () => "b-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 8);
+const lsGet = (k) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : null; } catch { return null; } };
+const lsSet = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch { return false; } };
+const when = (t) => { try { return new Date(t).toLocaleString(undefined, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }); } catch { return ""; } };
+
+// ------------------------------------------------------------------ state
+const REF = E.REFERENCES.map((r) => ({ ...r, result: Object.assign(E.analyze(r.build), { costUSD: null }) }));
+const S = {
+  build: null, projectId: null, iterId: null, savedSnap: null, result: null,
+  overlay: "auto", compare: new Set(), refCompare: new Set(),
+  docs: [], projects: [], store: null, analysisCache: new Map(),
+};
+const WORK_KEY = "skiLayupLab.working.v1", UNITS_KEY = "skiLayupLab.units.v1";
+S.units = lsGet(UNITS_KEY) === "us" ? "us" : "metric";
+let U = E.makeUnits(S.units);
+const analyzeCurrent = () => Object.assign(E.analyze(S.build, { units: S.units }), { costUSD: E.billOfMaterials(S.build).total });
+const SET_KEY = "skiLayupLab.settings.v1";
+const settings = Object.assign({ mode: "detailed", theme: "auto" }, lsGet(SET_KEY) || {});
+
+
+// ------------------------------------------------------------------ storage
+function makeLocalStore() {
+  const KEY = "skiLayupLab.builds.v1";
+  let mem = lsGet(KEY) || {};
+  const subs = new Set();
+  const list = () => Object.entries(mem).map(([id, d]) => ({ id, ...d }));
+  const emit = () => subs.forEach((f) => f(list()));
+  return {
+    mode: "local",
+    subscribe(f) { subs.add(f); f(list()); return () => subs.delete(f); },
+    async put(id, d) { mem[id] = clone(d); lsSet(KEY, mem); emit(); },
+    async del(id) { delete mem[id]; lsSet(KEY, mem); emit(); },
+    list,
+  };
+}
+function makeCloudStore(db, uid) {
+  const col = db.collection("data/users/" + uid);
+  const chains = new Map();
+  const queue = (id, fn) => {
+    const p = (chains.get(id) || Promise.resolve()).catch(() => {}).then(fn);
+    chains.set(id, p);
+    return p;
+  };
+  const retryOnce = async (fn) => {
+    try { return await fn(); } catch (e) {
+      if (e && e.code === "unavailable") { await new Promise((r) => setTimeout(r, 400 + Math.random() * 600)); return fn(); }
+      throw e;
+    }
+  };
+  let current = [];
+  return {
+    mode: "cloud",
+    subscribe(f, onErr) {
+      return col.onSnapshot((snap) => {
+        current = snap.docs.filter((d) => d.exists).map((d) => ({ id: d.id, ...clone(d.data()) }));
+        f(current);
+      }, onErr);
+    },
+    put(id, d) { return queue(id, () => retryOnce(() => col.doc(id).set(clone(d)))); },
+    del(id) { return queue(id, () => retryOnce(() => col.doc(id).delete())); },
+    list: () => current,
+  };
+}
+// Builds saved through your own server (the standalone app sets window.SKI_LAB_CONFIG.api).
+function makeApiStore(base) {
+  let current = [];
+  const subs = new Set();
+  const call = async (path, init) => {
+    const r = await fetch(base + path, init);
+    if (r.status === 401) { location.href = "/login?next=/lab"; throw { code: "unavailable", message: "Signed out" }; }
+    if (!r.ok) throw { code: r.status === 413 ? "quota_exceeded" : r.status === 400 ? "invalid_argument" : "unavailable", message: "HTTP " + r.status };
+    return r.status === 204 ? null : r.json();
+  };
+  const refresh = async () => { current = (await call("/builds")).builds; subs.forEach((f) => f(current)); };
+  return {
+    mode: "api",
+    subscribe(f, onErr) { subs.add(f); refresh().catch(onErr); return () => subs.delete(f); },
+    async put(id, d) { await call("/builds/" + encodeURIComponent(id), { method: "PUT", headers: { "content-type": "application/json" }, body: JSON.stringify(d) }); await refresh(); },
+    async del(id) { await call("/builds/" + encodeURIComponent(id), { method: "DELETE" }); await refresh(); },
+    list: () => current,
+  };
+}
+let unsub = null;
+function useStore(store) {
+  if (unsub) { try { unsub(); } catch {} }
+  S.store = store;
+  unsub = store.subscribe((list) => {
+      S.docs = list;
+      S.projects = list.map(toProject).filter(Boolean).sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
+      updateState(); renderCompare(); renderMatch(); renderProjectsIfOpen();
+    },
+    (err) => { if (store.mode !== "local") { notice("Couldn't load builds from your account (" + esc(err?.code || "error") + "). Saving in this browser for now."); useStore(makeLocalStore()); } });
+  $("#storeMode").textContent = store.mode === "cloud" ? "Saved to your Claude account · private to you" : store.mode === "api" ? "Saved to your server's database" : "Saved in this browser";
+}
+function notice(html, actions) {
+  const n = $("#notice");
+  n.innerHTML = `<span>${html}</span>` + (actions || "") + ` <button class="btn small ghost" data-act="dismiss">Dismiss</button>`;
+  n.hidden = false;
+}
+async function writeSave(id, doc) {
+  try { await S.store.put(id, doc); return true; } catch (e) {
+    const code = e && e.code;
+    if (code === "quota_exceeded") { notice("Your saved-builds storage is full. Delete a few builds, then save again."); return false; }
+    if (S.store.mode !== "local") {
+      notice("This view can't save to " + (S.store.mode === "api" ? "the server" : "your account") + (code ? ` (${esc(code)})` : "") + ", so builds are being saved in this browser instead.");
+      const local = makeLocalStore(); useStore(local); await local.put(id, doc); return true;
+    }
+    notice("Couldn't save the build."); return false;
+  }
+}
+
+// ------------------------------------------------------------------ input panel
+// Each input row: [label, path, kind, min, max, step, hint]. min/max/step are in metric
+// (the units the build is stored in); IN_KINDS converts them for the US display.
+const IN_KINDS = {
+  cm:  { metric: ["cm", 1], us: ["in", 2.54, 0.25] },
+  mmW: { metric: ["mm", 1], us: ["in", 25.4, 0.01] },
+  mmT: { metric: ["mm", 1], us: ["in", 25.4, 0.001] },
+  gsm: { metric: ["g/m²", 1], us: ["oz/yd²", E.OZ, 0.25] },
+  g:   { metric: ["g", 1], us: ["oz", 28.349523, 0.25] },
+  pct: { metric: ["%", 0.01], us: ["%", 0.01] },
+  "":  { metric: ["", 1], us: ["", 1] },
+};
+const kindSpec = (kind, step) => {
+  const [unit, scale, usStep] = IN_KINDS[kind][S.units];
+  return { unit, scale, step: S.units === "us" && usStep ? usStep : (kind === "pct" ? step / 0.01 : step) };
+};
+const SHAPE = [
+  ["Length", "lengthCm", "cm", 140, 200, 1],
+  ["Tip width", "tipWidth", "mmW", 90, 170, 1],
+  ["Waist width", "waistWidth", "mmW", 60, 130, 1],
+  ["Tail width", "tailWidth", "mmW", 80, 160, 1],
+  ["Waist offset", "waistOffsetCm", "cm", -15, 15, 0.5, "from center, + toward the tip"],
+  ["Tip contact point", "tipContactCm", "cm", 8, 40, 0.5, "measured from the tip"],
+  ["Tail contact point", "tailContactCm", "cm", 5, 40, 0.5, "measured from the tail"],
+  ["Mount point", "mountOffsetCm", "cm", -15, 5, 0.5, "boot center from ski center, − toward the tail"],
+  ["Camber height", "camberMm", "mmT", 0, 10, 0.5],
+  ["Tip rocker length", "tipRockerCm", "cm", 0, 60, 1, "from the tip; camber starts after it"],
+  ["Tail rocker length", "tailRockerCm", "cm", 0, 60, 1, "from the tail"],
+];
+const CORE = [
+  ["Underfoot thickness", "core.underfootMm", "mmT", 5, 18, 0.1],
+  ["At tip contact", "core.tipMm", "mmT", 1, 8, 0.1],
+  ["At tail contact", "core.tailMm", "mmT", 1, 8, 0.1],
+  ["At the very ends", "core.endMm", "mmT", 1, 6, 0.1],
+  ["Flat zone underfoot", "core.plateauCm", "cm", 0, 80, 1],
+  ["Taper shape", "core.shape", "", 0.5, 2, 0.1, "1 = straight · below 1 stays thick longer"],
+];
+const PROCESS = [
+  ["Fiber volume fraction", "vf", "", 0.25, 0.6, 0.01, "hand layup in a home press ≈ 0.35–0.45"],
+  ["Bond resin per layer", "bondGsm", "gsm", 40, 300, 10, "extra epoxy between layers"],
+  ["Tip/tail fill & hardware", "extrasG", "g", 0, 250, 5, "spacers, protectors, insert plates"],
+];
+const opt = (obj, sel) => Object.entries(obj).filter(([k]) => k !== "factory" || k === sel).map(([k, v]) => `<option value="${k}"${k === sel ? " selected" : ""}>${esc(v ? v.name : "None")}</option>`).join("");
+const decimals = (step) => (String(step).split(".")[1] || "").length;
+const round = (x, d) => +x.toFixed(d);
+// Number input for a stored metric value, shown in the current unit system.
+const field = (kind, path, v, min, max, step, extra = "") => {
+  const k = kindSpec(kind, step), d = decimals(k.step);
+  return `<input class="in" type="number" inputmode="decimal" data-path="${path}" ${k.scale !== 1 ? `data-scale="${k.scale}"` : ""} min="${round(min / k.scale, d + 1)}" max="${round(max / k.scale, d + 1)}" step="${k.step}" value="${round(v / k.scale, d)}" ${extra}>`;
+};
+const lbl = (text, kind) => { const u = IN_KINDS[kind][S.units][0]; return `<span class="lbl">${text}${u ? " " + u : ""}</span>`; };
+const sheetRows = (rows) => rows.map(([label, path, kind, min, max, step, hint]) =>
+  `<tr><th><label for="f-${path}">${esc(label)}</label>${hint ? `<small>${esc(hint)}</small>` : ""}</th><td>${field(kind, path, getPath(S.build, path), min, max, step, `id="f-${path}"`)}</td><td class="u">${IN_KINDS[kind][S.units][0]}</td></tr>`).join("");
+const fiberSw = (f) => `<span class="swatch" style="background:var(--f-${f})"></span>`;
+const fabricUnit = () => S.units === "us" ? "oz/yd²" : "g/m²";
+
+function fabricRows(side) {
+  const list = S.build[side] || [];
+  const us = S.units === "us";
+  const rows = list.map((f, i) => `
+    <div class="row fab">
+      <select class="sel" data-path="${side}.${i}.fiber" aria-label="Fiber">${opt(E.FIBERS, f.fiber)}</select>
+      <select class="sel" data-path="${side}.${i}.arch" aria-label="Weave">${opt(E.ARCHITECTURES, f.arch)}</select>
+      <div title="${us ? `≈ ${fmt(f.gsm)} g/m²` : `≈ ${fmt(f.gsm / E.OZ, 1)} oz/yd²`}">${field("gsm", `${side}.${i}.gsm`, f.gsm, 34, 1356, 10, `aria-label="Fabric weight in ${fabricUnit()}"`)}</div>
+      <div title="number of plies">${field("", `${side}.${i}.plies`, f.plies || 1, 1, 4, 1, 'aria-label="Plies"')}</div>
+      <button class="x" data-act="rm-fab" data-side="${side}" data-i="${i}" aria-label="Remove fabric">×</button>
+    </div>`).join("");
+  const head = list.length ? `<div class="row fab" style="margin-bottom:-2px"><span class="lbl">Fiber</span><span class="lbl">Weave</span><span class="lbl">${fabricUnit()}</span><span class="lbl">Plies</span><span></span></div>` : `<div class="hint">No fabric on this side.</div>`;
+  return head + rows + `<button class="add" data-act="add-fab" data-side="${side}">+ Add fabric</button>`;
+}
+function metalRow(key) {
+  const m = S.build[key];
+  return `<div class="row three">
+    <label><span class="lbl">Metal</span><select class="sel" data-path="${key}.material">${opt(E.METALS, m.material)}</select></label>
+    <label>${lbl("Thickness", "mmT")}${field("mmT", `${key}.thicknessMm`, m.thicknessMm, 0.1, 1.5, 0.05)}</label>
+    <label>${lbl("Coverage", "pct")}${field("pct", `${key}.coverage`, m.coverage, 0.1, 1, 0.05)}</label>
+  </div>`;
+}
+function layerBox(title, swatch, body, sub = "") {
+  return `<div class="layer"><div class="lh">${swatch}<b>${title}</b>${sub ? `<span class="hint">${sub}</span>` : ""}</div>${body}</div>`;
+}
+function renderInputs() {
+  if (settings.mode === "simple") return renderInputsSimple();
+  const b = S.build;
+  const sum = b.core.blend.reduce((a, x) => a + (+x.pct || 0), 0);
+  const woodRows = b.core.blend.map((w, i) => `
+    <div class="row wood">
+      <select class="sel" data-path="core.blend.${i}.wood" aria-label="Wood">${opt(E.WOODS, w.wood)}</select>
+      ${field("", `core.blend.${i}.pct`, w.pct, 0, 100, 5, 'aria-label="Percent of core"')}
+      <span class="u hint">%</span>
+      <button class="x" data-act="rm-wood" data-i="${i}" aria-label="Remove wood" ${b.core.blend.length < 2 ? "disabled" : ""}>×</button>
+    </div>`).join("");
+  $("#inputs").innerHTML = `
+  <div class="card">
+    <div class="group-title"><h3>Shape</h3></div>
+    <table class="sheet">${sheetRows(SHAPE)}</table>
+  </div>
+  <div class="card">
+    <div class="group-title"><h3>Core</h3><span class="hint" id="blendSum">${sum === 100 ? "blend = 100%" : `blend = ${fmt(sum)}% (scaled to 100%)`}</span></div>
+    <div style="margin:8px 0 10px">${woodRows}<button class="add" data-act="add-wood">+ Add wood</button></div>
+    <table class="sheet">${sheetRows(CORE)}</table>
+  </div>
+  <div class="card">
+    <div class="group-title"><h3>Layup, base to topsheet</h3></div>
+    ${layerBox("Topsheet", '<span class="swatch" style="background:var(--c-top)"></span>', `<div class="row two">
+      <label><span class="lbl">Material</span><select class="sel" data-path="topsheet.material">${opt(E.TOPSHEETS, b.topsheet.material)}</select></label>
+      <label>${lbl("Thickness", "mmT")}${field("mmT", "topsheet.thicknessMm", b.topsheet.thicknessMm, 0.2, 1.5, 0.05)}</label></div>`)}
+    ${layerBox("Top laminate", fiberSw((b.laminatesTop[0] || {}).fiber || "eglass"), fabricRows("laminatesTop"))}
+    ${layerBox("Top metal", '<span class="swatch" style="background:var(--c-metal)"></span>', metalRow("metalTop"))}
+    ${layerBox("Core & sidewalls", '<span class="swatch" style="background:var(--w-light)"></span>', `<div class="row two">
+      <label><span class="lbl">Sidewall</span><select class="sel" data-path="sidewall.material">${opt(E.SIDEWALLS, b.sidewall.material)}</select></label>
+      <label>${lbl("Sidewall width", "mmT")}${field("mmT", "sidewall.widthMm", b.sidewall.widthMm, 0, 8, 0.5, b.sidewall.material === "cap" ? "disabled" : "")}</label></div>
+      <div class="coreline">Core wood and thickness are set in the Core section above.</div>`)}
+    ${layerBox("Bottom metal", '<span class="swatch" style="background:var(--c-metal)"></span>', metalRow("metalBottom"))}
+    ${layerBox("Bottom laminate", fiberSw((b.laminatesBottom[0] || {}).fiber || "eglass"), fabricRows("laminatesBottom"))}
+    ${layerBox("Rubber over the edges", '<span class="swatch" style="background:var(--c-rubber)"></span>', `<div class="row three">
+      <label class="check"><input type="checkbox" data-path="rubber.on" ${b.rubber.on ? "checked" : ""}> Use rubber</label>
+      <label>${lbl("Thickness", "mmT")}${field("mmT", "rubber.thicknessMm", b.rubber.thicknessMm, 0.1, 1, 0.05)}</label>
+      <label>${lbl("Width each side", "mmW")}${field("mmW", "rubber.widthMm", b.rubber.widthMm, 4, 30, 1)}</label></div>`)}
+    ${layerBox("Edges", '<span class="swatch" style="background:var(--c-steel)"></span>', `<div class="row two">
+      <label>${lbl("Width", "mmT")}${field("mmT", "edges.widthMm", b.edges.widthMm, 1.4, 3, 0.1)}</label>
+      <label>${lbl("Height", "mmT")}${field("mmT", "edges.heightMm", b.edges.heightMm, 1.5, 2.6, 0.1)}</label></div>`)}
+    ${layerBox("Base", '<span class="swatch" style="background:var(--c-base)"></span>', `<div class="row two">
+      <label><span class="lbl">Material</span><select class="sel" data-path="base.material">${opt(E.BASES, b.base.material)}</select></label>
+      <label>${lbl("Thickness", "mmT")}${field("mmT", "base.thicknessMm", b.base.thicknessMm, 0.8, 2, 0.1)}</label></div>`)}
+  </div>
+  <div class="card">
+    <div class="group-title"><h3>Process</h3></div>
+    <table class="sheet">${sheetRows(PROCESS)}
+      <tr><th><label for="f-press">Press</label><small>decides whether metal layers can bond</small></th><td colspan="2"><select id="f-press" class="sel" data-path="press">${opt(E.PRESSES, b.press)}</select></td></tr>
+    </table>
+  </div>`;
+  $("#buildName").value = b.name || "";
+}
+
+function readInput(el) {
+  if (el.type === "checkbox") return el.checked;
+  if (el.tagName === "SELECT") return el.value;
+  const v = parseFloat(el.value);
+  if (!Number.isFinite(v)) return undefined;
+  return v * (parseFloat(el.dataset.scale) || 1);
+}
+$("#inputs").addEventListener("input", (e) => {
+  const el = e.target, path = el.dataset.path;
+  if (!path) return;
+  const v = readInput(el);
+  if (v === undefined) return;
+  setPath(S.build, path, v);
+  if (path === "sidewall.material" || path.endsWith(".fiber")) { renderInputs(); }
+  schedule();
+});
+$("#inputs").addEventListener("change", (e) => {
+  const el = e.target;
+  if (!el.dataset.path || el.type !== "number") return;
+  const min = parseFloat(el.min), max = parseFloat(el.max);
+  let shown = parseFloat(el.value);
+  if (!Number.isFinite(shown)) shown = (getPath(S.build, el.dataset.path) || 0) / (parseFloat(el.dataset.scale) || 1);
+  const clamped = Math.min(max, Math.max(min, shown));
+  if (clamped !== parseFloat(el.value)) { el.value = +clamped.toFixed(4); setPath(S.build, el.dataset.path, clamped * (parseFloat(el.dataset.scale) || 1)); schedule(); }
+});
+$("#inputs").addEventListener("click", (e) => {
+  const btn = e.target.closest("[data-act]");
+  if (!btn) return;
+  const b = S.build, act = btn.dataset.act, i = +btn.dataset.i;
+  if (act === "add-fab") b[btn.dataset.side].push({ fiber: "eglass", arch: "triax", gsm: Math.round(22 * E.OZ), plies: 1 });
+  if (act === "rm-fab") b[btn.dataset.side].splice(i, 1);
+  if (act === "add-wood") b.core.blend.push({ wood: "ash", pct: 10 });
+  if (act === "rm-wood" && b.core.blend.length > 1) b.core.blend.splice(i, 1);
+  renderInputs(); schedule();
+});
+
+
+// ------------------------------------------------------------------ compute + render
+let raf = 0, workTimer = 0;
+function schedule() {
+  cancelAnimationFrame(raf);
+  raf = requestAnimationFrame(() => {
+    S.result = analyzeCurrent();
+    renderResults();
+    updateState();
+    if (typeof WB !== "undefined") WB.onDesignChange();
+    const sum = S.build.core.blend.reduce((a, x) => a + (+x.pct || 0), 0);
+    const bs = $("#blendSum"); if (bs) bs.textContent = sum === 100 ? "blend = 100%" : `blend = ${fmt(sum)}% (scaled to 100%)`;
+  });
+  saveWorking();
+}
+function saveWorking() {
+  clearTimeout(workTimer);
+  workTimer = setTimeout(() => lsSet(WORK_KEY, { build: S.build, projectId: S.projectId, iterId: S.iterId, savedSnap: S.savedSnap }), 400);
+}
+window.addEventListener("pagehide", () => { clearTimeout(workTimer); lsSet(WORK_KEY, { build: S.build, projectId: S.projectId, iterId: S.iterId, savedSnap: S.savedSnap }); });
+function updateState() {
+  const el = $("#saveState"), p = currentProject(), it = iterById(p, S.iterId), dirty = isDirty();
+  if (!p) { el.textContent = "New project · not saved"; el.className = "state dirty"; }
+  else if (dirty) { el.textContent = (it ? `from ${it.label} · ` : "") + "unsaved changes"; el.className = "state dirty"; }
+  else { el.textContent = (it ? it.label + " · " : "") + "saved"; el.className = "state"; }
+  const btn = $("#saveBtn");
+  btn.textContent = !p ? "Save v1" : dirty ? `Save v${nextN(p)}` : "Saved";
+  btn.disabled = !!p && !dirty;
+  btn.title = !p ? "Start a project with this design as v1 (Ctrl/⌘+S)" : dirty ? `Save this design as v${nextN(p)} of ${p.name} (Ctrl/⌘+S)` : "Nothing new to save";
+  renderProjectCard();
+}
+
+function overlayInfo() {
+  const r = S.result;
+  let best = null;
+  const sims = REF.map((ref) => ({ ref, sim: E.similarity(r, ref.result) })).sort((a, b) => b.sim - a.sim);
+  best = sims[0];
+  let ov = { name: best.ref.build.name, result: best.ref.result, build: best.ref.build, kind: "ref" };
+  if (S.overlay.startsWith("ref:")) {
+    const ref = REF.find((x) => "ref:" + x.id === S.overlay);
+    if (ref) ov = { name: ref.build.name, result: ref.result, build: ref.build, kind: "ref" };
+  } else if (S.overlay.startsWith("it:")) {
+    const [pid, iid] = S.overlay.slice(3).split("|"), p = projectById(pid), it = iterById(p, iid);
+    if (it) ov = { name: `${p.name} · ${it.label}`, result: analyzeIter(pid, it), build: normalizeBuild(it.build), kind: "save" };
+  }
+  return { sims, best, ov };
+}
+
+function renderResults() {
+  if (settings.mode === "simple") renderSimple();
+  else { renderScore(); renderMatch(); renderSection(); renderCharts(); renderAttrs(); renderIssues(); renderLayers(); }
+  renderShape();
+  renderMiniBar();
+  renderBOM();
+  renderCompare();
+  if (typeof renderOpt === "function" && $("#optOut")) renderOpt();
+  const jt = $("#jsonText");
+  if (document.activeElement !== jt) jt.value = JSON.stringify(S.build, null, 2);
+}
+
+function renderScore() {
+  const r = S.result, sc = r.scores;
+  const nHigh = r.issues.filter((i) => i.severity === "High").length, nMed = r.issues.filter((i) => i.severity === "Medium").length;
+  const stats = [
+    ["Weight per ski", U.n("massG", r.weightG), U.unit("massG")],
+    ["Scaled to " + U.fmt("lenCm", 177), U.n("massG", r.weight177), U.unit("massG")],
+    ["Sidecut radius", U.n("lenM", r.geometry.sidecutR), U.unit("lenM")],
+    ["Running length", U.n("lenCm", r.geometry.runLength * 100, 0), U.unit("lenCm")],
+    ["Center flex", U.n("rateNmm", r.flexRate), U.unit("rateNmm")],
+    ["Force to flatten camber", U.n("forceN", r.flattenN, S.units === "us" ? 1 : 0), U.unit("forceN")],
+    ["Carve energy", U.n("energyJ", r.turnEnergyJ), U.unit("energyJ")],
+    ["First vibration mode", fmt(r.f1, 1), "Hz"],
+    ["Loss factor", fmt(r.eta, 4), ""],
+    ["Forebody twist", fmt(S.units === "us" ? r.twistDeg * 1.35581795 : r.twistDeg, 1), "° per 10 " + U.unit("torqueNm")],
+    ["Stack above base", U.n("thickMm", r.aboveBaseMm), U.unit("thickMm")],
+    ["Swing weight", U.n("inertia", r.swing), U.unit("inertia")],
+  ];
+  $("#scoreCard").innerHTML = `
+    <div class="scores">
+      <div class="score main"><span class="k">Overall</span><span class="v">${fmt(sc.overall, 1)}<small> /10</small></span><span class="d">average of performance and build quality</span></div>
+      <div class="score"><span class="k">Performance</span><span class="v">${fmt(sc.performance, 1)}<small> /10</small></span><span class="d">weighted use-case fit</span></div>
+      <div class="score"><span class="k">Build quality</span><span class="v">${fmt(sc.buildQuality, 1)}<small> /10</small></span><span class="d">${nHigh ? `${nHigh} high` : "no high"} · ${nMed} medium issue${nMed === 1 ? "" : "s"}</span></div>
+    </div>
+    <dl class="stats">${stats.map(([k, v, u]) => `<div><dt>${k}</dt><dd>${v} <small>${u}</small></dd></div>`).join("")}</dl>`;
+}
+function renderMiniBar() {
+  const r = S.result, sc = r.scores;
+  $("#miniBar").innerHTML = `<span>Overall <b>${fmt(sc.overall, 1)}</b></span><span class="num">perf ${fmt(sc.performance, 1)} · quality ${fmt(sc.buildQuality, 1)} · ${U.fmt("massG", r.weightG)}</span><span class="sub">Results ↓</span>`;
+}
+
+function renderMatch() {
+  if (!S.result) return;
+  const { sims, best, ov } = overlayInfo();
+  const options = [`<option value="auto"${S.overlay === "auto" ? " selected" : ""}>Closest match (auto)</option>`]
+    .concat(REF.map((x) => `<option value="ref:${x.id}"${S.overlay === "ref:" + x.id ? " selected" : ""}>${esc(x.build.name)}</option>`))
+    .concat(currentProject() ? [`<optgroup label="${esc(currentProject().name)}">` + currentProject().iterations.slice().reverse().map((it) => { const v = "it:" + S.projectId + "|" + it.id; return `<option value="${esc(v)}"${S.overlay === v ? " selected" : ""}>${esc(it.label)}</option>`; }).join("") + `</optgroup>`] : []);
+  $("#matchCard").innerHTML = `
+    <header><h2>Closest production ski</h2>
+      <label class="sub">Overlay on charts <select class="pick" id="overlaySel" style="margin-left:6px">${options.join("")}</select></label></header>
+    <div class="match-top"><span class="big">${esc(best.ref.build.name)}</span><span class="sub">${fmt(best.sim, 1)}% similar on stiffness, torsion, weight, damping, sidecut and carve energy</span></div>
+    <div class="simlist">${sims.map((s) => `<div class="sim"><span>${esc(s.ref.build.name)}</span><span class="bar"><i style="width:${Math.max(2, s.sim)}%"></i></span><span class="num" style="text-align:right">${fmt(s.sim, 0)}%</span></div>`).join("")}</div>
+    <p class="sub" style="margin:10px 0 0">Charts and markers below compare against <b style="color:var(--ref)">${esc(ov.name)}</b>. Production layups are modeled from published construction and tuned to published weight.</p>`;
+  $("#overlaySel").addEventListener("change", (e) => { S.overlay = e.target.value; renderResults(); });
+}
+
+function renderShape() {
+  const r = S.result, { ov } = overlayInfo();
+  const W = 680, padL = 8, padR = 8, Lmax = Math.max(r.geometry.L, ov.result.geometry.L);
+  const sx = (W - padL - padR) / Lmax, wScale = sx * 1.5;
+  const cy = 16 + (0.17 * wScale) / 2;
+  const outline = (st) => {
+    const top = st.map((p) => `${(padL + p.s * sx).toFixed(1)},${(cy - p.w / 2 * wScale).toFixed(1)}`);
+    const bot = st.slice().reverse().map((p) => `${(padL + p.s * sx).toFixed(1)},${(cy + p.w / 2 * wScale).toFixed(1)}`);
+    return "M" + top.join("L") + "L" + bot.join("L") + "Z";
+  };
+  const g = r.geometry;
+  const xs = (s) => padL + s * sx;
+  const wAt = (s) => { const i = Math.round(s / g.L * (r.stations.length - 1)); return r.stations[Math.max(0, Math.min(r.stations.length - 1, i))].w; };
+  const profTop = cy + (0.17 * wScale) / 2 + 26;
+  const tScale = sx * 10; // thickness ×10
+  const coreZ0 = (r.bootSection.find((x) => x.group === "core") || { z0: 0 }).z0;
+  const maxT = Math.max(...r.stations.map((p) => p.total));
+  const base = profTop + maxT * tScale + 2;
+  const tot = r.stations.map((p) => `${xs(p.s).toFixed(1)},${(base - p.total * tScale).toFixed(1)}`);
+  const cTop = r.stations.map((p) => `${xs(p.s).toFixed(1)},${(base - (coreZ0 + p.tCore) * tScale).toFixed(1)}`);
+  const cBot = r.stations.slice().reverse().map((p) => `${xs(p.s).toFixed(1)},${(base - coreZ0 * tScale).toFixed(1)}`);
+  const H = base + 18;
+  const vline = (s, label, y1, y2, anchor = "middle") => `<line class="mark" x1="${xs(s)}" x2="${xs(s)}" y1="${y1}" y2="${y2}"/><text class="markt" x="${xs(s)}" y="${y2 + 11}" text-anchor="${anchor}">${label}</text>`;
+  const svg = `<svg viewBox="0 0 ${W} ${H.toFixed(0)}" role="img" aria-label="Top view and thickness profile of the ski">
+    <path class="ski-out" d="${outline(r.stations)}"/>
+    <path class="ski-ref" d="${outline(ov.result.stations)}"/>
+    <circle class="contact" cx="${xs(g.sTail)}" cy="${cy - wAt(g.sTail) / 2 * wScale}" r="3"/><circle class="contact" cx="${xs(g.sTail)}" cy="${cy + wAt(g.sTail) / 2 * wScale}" r="3"/>
+    <circle class="contact" cx="${xs(g.sTip)}" cy="${cy - wAt(g.sTip) / 2 * wScale}" r="3"/><circle class="contact" cx="${xs(g.sTip)}" cy="${cy + wAt(g.sTip) / 2 * wScale}" r="3"/>
+    <line x1="${xs(g.sBoot)}" x2="${xs(g.sBoot)}" y1="${cy - 0.06 * wScale}" y2="${cy + 0.06 * wScale}" stroke="var(--ink)" stroke-width="2"/>
+    <text class="markt" x="${xs(g.sBoot)}" y="${cy - 0.065 * wScale - 3}" text-anchor="middle">boot</text>
+    <path d="M${tot.join("L")}L${xs(g.L)},${base}L${xs(0)},${base}Z" class="prof-total"/>
+    <path d="M${cTop.join("L")}L${cBot.join("L")}Z" class="prof-core"/>
+    ${vline(g.camTail, "camber starts", profTop - 4, base + 3, "start")}
+    ${vline(g.camTip, "camber ends", profTop - 4, base + 3, "end")}
+    <text class="axl" x="${W / 2}" y="${profTop - 8}" text-anchor="middle">side view · thickness ×10 · wood core inside</text>
+    <text class="axl" x="${padL}" y="11">← tail</text><text class="axl" x="${W - padR}" y="11" text-anchor="end">tip →</text>
+  </svg>`;
+  $("#shapeView").innerHTML = `<div class="legend"><span><i></i>This build</span><span><i class="ref"></i>${esc(ov.name)}</span></div>` + svg;
+  $("#shapeSub").textContent = `${U.n("widthMm", S.build.tipWidth)}/${U.n("widthMm", S.build.waistWidth)}/${U.n("widthMm", S.build.tailWidth)} ${U.unit("widthMm")} · R ${U.fmt("lenM", g.sidecutR)} · width drawn ×1.5`;
+}
+
+function coreStrips(blend, n = 12) {
+  const tot = blend.reduce((a, x) => a + (+x.pct || 0), 0) || 1;
+  const woods = blend.filter((x) => x.pct > 0 && E.WOODS[x.wood]).map((x) => ({ ...x, w: E.WOODS[x.wood] })).sort((a, b) => b.w.rho - a.w.rho);
+  const counts = woods.map((x) => Math.round(x.pct / tot * n));
+  let diff = n - counts.reduce((a, c) => a + c, 0);
+  for (let i = woods.length - 1; diff !== 0 && woods.length; i = (i - 1 + woods.length) % woods.length) { if (diff > 0) { counts[i]++; diff--; } else if (counts[i] > 0) { counts[i]--; diff++; } }
+  const order = []; for (let i = 0; i < n / 2; i++) order.push(i, n - 1 - i);
+  const strips = new Array(n).fill("light");
+  let k = 0;
+  woods.forEach((x, wi) => { for (let c = 0; c < counts[wi]; c++) strips[order[k++]] = x.w.kind; });
+  return strips;
+}
+function renderSection() {
+  const r = S.result, b = S.build;
+  const w = r.geometry.bootWidth, T = r.bootTotal;
+  const W = 420, pad = 6, sx = (W - 2 * pad) / w, sz = sx * 3, H = T * sz + 2 * pad;
+  const y = (z, h) => H - pad - (z + h) * sz;
+  const parts = [];
+  const sideW = { edges: b.edges.widthMm / 1000, sidewall: b.sidewall.widthMm / 1000, rubber: Math.min(w / 2, b.rubber.widthMm / 1000) };
+  for (const rc of r.bootSection) {
+    if (rc.name === "Edge tangs") continue;
+    const cls = rc.group === "laminate" ? "f-" + rc.fiber : "g-" + rc.group;
+    if (rc.group === "edges" || rc.group === "sidewall" || rc.group === "rubber") {
+      const bw = sideW[rc.group];
+      parts.push(`<rect class="${cls}" x="${pad}" y="${y(rc.z0, rc.h)}" width="${bw * sx}" height="${rc.h * sz}"/>`);
+      parts.push(`<rect class="${cls}" x="${W - pad - bw * sx}" y="${y(rc.z0, rc.h)}" width="${bw * sx}" height="${rc.h * sz}"/>`);
+    } else if (rc.group === "core") {
+      const strips = coreStrips(b.core.blend), sw = rc.b / strips.length;
+      const x0 = pad + (w - rc.b) / 2 * sx;
+      strips.forEach((k, i) => parts.push(`<rect class="w-${k}" x="${x0 + i * sw * sx}" y="${y(rc.z0, rc.h)}" width="${sw * sx}" height="${rc.h * sz}"/>`));
+    } else if (rc.group === "base") {
+      parts.push(`<rect class="${cls}" x="${pad + sideW.edges * sx}" y="${y(rc.z0, rc.h)}" width="${rc.b * sx}" height="${rc.h * sz}"/>`);
+    } else {
+      parts.push(`<rect class="${cls}" x="${pad + (w - rc.b) / 2 * sx}" y="${y(rc.z0, rc.h)}" width="${rc.b * sx}" height="${rc.h * sz}"/>`);
+    }
+  }
+  const legend = r.bootSection.filter((x) => x.name !== "Edge tangs").slice().sort((a, b) => (b.z0 + b.h / 2) - (a.z0 + a.h / 2)).map((rc) => {
+    const color = rc.group === "laminate" ? `var(--f-${rc.fiber})` : ({ base: "var(--c-base)", edges: "var(--c-steel)", rubber: "var(--c-rubber)", metal: "var(--c-metal)", core: "var(--w-light)", sidewall: "var(--c-side)", topsheet: "var(--c-top)" })[rc.group];
+    let name = rc.name;
+    if (rc.group === "laminate") { const side = rc.name.startsWith("Top") ? "laminatesTop" : "laminatesBottom"; const i = +rc.name.split(" ").pop() - 1; const f = S.build[side][i]; if (f) name = `${E.FIBERS[f.fiber].name} ${E.ARCHITECTURES[f.arch].name.split(" ")[0].toLowerCase()}, ${U.fmt("arealGsm", f.gsm)}${(f.plies || 1) > 1 ? " ×" + f.plies : ""}`; }
+    if (rc.group === "metal") name = `${rc.name} (${E.METALS[S.build[rc.name.startsWith("Top") ? "metalTop" : "metalBottom"].material].name})`;
+    if (rc.group === "edges") name = "Steel edges";
+    return `<li><span class="swatch" style="background:${color}"></span><span>${esc(name)}</span><span class="num">${U.fmt("thickMm", rc.h * 1000, S.units === "us" ? 3 : 2)}</span></li>`;
+  }).join("");
+  $("#sectionView").innerHTML = `<svg viewBox="0 0 ${W} ${H.toFixed(1)}" role="img" aria-label="Cross-section of the layup under the boot">${parts.join("")}</svg>
+    <ul class="stack">${legend}<li><span></span><span class="tot">Total at the boot</span><span class="num tot">${U.fmt("thickMm", T * 1000)}</span></li></ul>`;
+}
+
+function niceMax(v) { const p = Math.pow(10, Math.floor(Math.log10(v))); for (const m of [1, 1.2, 1.5, 2, 2.5, 3, 4, 5, 6, 8, 10]) if (m * p >= v) return m * p; return 10 * p; }
+function lineChart(el, { title, kind, key, ov }) {
+  const r = S.result, unit = U.unit(kind), cv = (v) => U.val(kind, v);
+  const us = S.units === "us", xPer = us ? 39.3700787 : 100, xStep = us ? 10 : 20, xUnit = us ? "in" : "cm";
+  const W = 680, H = 210, m = { l: us ? 64 : 48, r: 10, t: 10, b: 30 };
+  const series = [
+    { name: "This build", cls: "s-build", dot: "dot-b", pts: r.stations.map((p) => [p.s, cv(p[key])]) },
+    { name: ov.name, cls: "s-ref", dot: "dot-r", pts: ov.result.stations.map((p) => [p.s, cv(p[key])]) },
+  ];
+  const xMax = Math.max(r.geometry.L, ov.result.geometry.L);
+  const yMax = niceMax(Math.max(...series.flatMap((s) => s.pts.map((p) => p[1]))) * 1.05);
+  const X = (x) => m.l + x / xMax * (W - m.l - m.r), Y = (y) => H - m.b - y / yMax * (H - m.t - m.b);
+  const ticks = 5, grid = [];
+  for (let i = 0; i <= ticks; i++) { const v = yMax * i / ticks; grid.push(`<line class="gridl" x1="${m.l}" x2="${W - m.r}" y1="${Y(v)}" y2="${Y(v)}"/><text class="axt" x="${m.l - 6}" y="${Y(v) + 4}" text-anchor="end">${fmt(v)}</text>`); }
+  for (let t = 0; t <= xMax * xPer; t += xStep) grid.push(`<text class="axt" x="${X(t / xPer)}" y="${H - m.b + 15}" text-anchor="middle">${t}</text>`);
+  const path = (pts) => "M" + pts.map((p) => `${X(p[0]).toFixed(1)},${Y(p[1]).toFixed(1)}`).join("L");
+  const area = `M${X(series[0].pts[0][0])},${Y(0)}L` + series[0].pts.map((p) => `${X(p[0]).toFixed(1)},${Y(p[1]).toFixed(1)}`).join("L") + `L${X(series[0].pts.at(-1)[0])},${Y(0)}Z`;
+  const boot = r.geometry.sBoot;
+  el.innerHTML = `<div class="legend"><b style="color:var(--ink);font-weight:600;margin-right:6px">${title}</b><span><i></i>This build</span><span><i class="ref"></i>${esc(ov.name)}</span></div>
+  <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(title)} along the ski">
+    ${grid.join("")}
+    <line class="ax" x1="${m.l}" x2="${W - m.r}" y1="${Y(0)}" y2="${Y(0)}"/>
+    <path class="a-build" d="${area}"/>
+    <line class="mark" x1="${X(boot)}" x2="${X(boot)}" y1="${m.t}" y2="${Y(0)}"/><text class="markt" x="${X(boot) + 4}" y="${m.t + 9}">boot</text>
+    <path class="${series[1].cls}" d="${path(series[1].pts)}"/>
+    <path class="${series[0].cls}" d="${path(series[0].pts)}"/>
+    <text class="axl" x="${m.l}" y="${H - 2}">${xUnit} from tail</text>
+    <text class="axl" x="${W - m.r}" y="${H - 2}" text-anchor="end">${unit}</text>
+    <g class="hover" visibility="hidden"><line class="cross" y1="${m.t}" y2="${Y(0)}"/><circle class="dot-b" r="3.5"/><circle class="dot-r" r="3.5"/></g>
+    <rect x="${m.l}" y="${m.t}" width="${W - m.l - m.r}" height="${H - m.t - m.b}" fill="transparent" class="hit"/>
+  </svg><div class="tip" hidden></div>`;
+  const svg = el.querySelector("svg"), hit = el.querySelector(".hit"), hov = el.querySelector(".hover"), tip = el.querySelector(".tip");
+  const near = (pts, x) => { let best = pts[0]; for (const p of pts) if (Math.abs(p[0] - x) < Math.abs(best[0] - x)) best = p; return best; };
+  const move = (ev) => {
+    const pt = svg.createSVGPoint(); pt.x = ev.clientX; pt.y = ev.clientY;
+    const loc = pt.matrixTransform(svg.getScreenCTM().inverse());
+    const x = Math.max(0, Math.min(xMax, (loc.x - m.l) / (W - m.l - m.r) * xMax));
+    const a = near(series[0].pts, x), b = near(series[1].pts, x);
+    hov.setAttribute("visibility", "visible");
+    hov.querySelector("line").setAttribute("x1", X(x)); hov.querySelector("line").setAttribute("x2", X(x));
+    const [c1, c2] = hov.querySelectorAll("circle");
+    c1.setAttribute("cx", X(a[0])); c1.setAttribute("cy", Y(a[1]));
+    const inRef = x <= ov.result.geometry.L;
+    c2.setAttribute("visibility", inRef ? "visible" : "hidden"); c2.setAttribute("cx", X(b[0])); c2.setAttribute("cy", Y(b[1]));
+    tip.hidden = false;
+    tip.innerHTML = `<b class="num">${fmt(x * xPer)} ${xUnit}</b><br><span style="color:var(--accent)">This build: <span class="num">${fmt(a[1])}</span></span>` + (inRef ? `<br><span style="color:var(--ref)">${esc(ov.name)}: <span class="num">${fmt(b[1])}</span></span>` : "");
+    const rect = svg.getBoundingClientRect(), host = el.getBoundingClientRect();
+    tip.style.left = Math.min(host.width - 90, Math.max(90, X(x) / W * rect.width + (rect.left - host.left))) + "px";
+    tip.style.top = (Y(Math.max(a[1], inRef ? b[1] : 0)) / H * rect.height + (rect.top - host.top) - 8) + "px";
+  };
+  hit.addEventListener("pointermove", move);
+  hit.addEventListener("pointerdown", move);
+  hit.addEventListener("pointerleave", () => { hov.setAttribute("visibility", "hidden"); tip.hidden = true; });
+}
+function renderCharts() {
+  const { ov } = overlayInfo();
+  lineChart($("#eiChart"), { title: "Bending stiffness EI", kind: "stiffNm2", key: "EI", ov });
+  lineChart($("#gjChart"), { title: "Torsional stiffness GJ", kind: "stiffNm2", key: "GJ", ov });
+}
+
+function renderAttrs() {
+  const r = S.result, { ov } = overlayInfo(), o = ov.result;
+  $("#attrView").innerHTML = E.ATTRS.map((a) => {
+    const v = r.attributes[a.key], rv = o.attributes[a.key];
+    const pct = (x) => (x - 1) / 4 * 100;
+    return `<div class="bar-row"><div class="top-line"><span class="nm">${a.name}</span><span class="val">${fmt(v, 1)}<small>${fmt(rv, 1)}</small></span></div>
+      <div class="track" title="This build ${fmt(v, 1)} · ${esc(ov.name)} ${fmt(rv, 1)}"><span class="fill" style="width:${pct(v)}%"></span><span class="refm" style="left:${pct(rv)}%"></span></div>
+      <div class="why">${esc(r.attributes.why[a.key])}</div></div>`;
+  }).join("");
+  const sw = strengthsOf(r);
+  $("#fitView").innerHTML = `<div class="swsum">${sw.html}</div>` + r.fits.map((f, i) => {
+    const rv = o.fits[i].fit;
+    return `<div class="bar-row"><div class="top-line"><span class="nm">${f.name} ${sw.tag(f)}</span><span class="val">${fmt(f.fit, 1)}<small>${fmt(rv, 1)}</small></span></div>
+      <div class="track"><span class="fill" style="width:${f.fit * 10}%"></span><span class="refm" style="left:${rv * 10}%"></span></div></div>`;
+  }).join("") + `<p class="why" style="margin:4px 0 0">Bars are this build; the <span style="color:var(--ref)">purple mark</span> is ${esc(ov.name)}.</p>`;
+}
+
+// Strongest and weakest use cases (and attributes), so a weak spot is never averaged away.
+function strengthsOf(r) {
+  const r1 = (x) => Math.round(x * 10) / 10;
+  const fv = r.fits.map((f) => r1(f.fit)), hi = Math.max(...fv), lo = Math.min(...fv);
+  const strong = r.fits.filter((f) => r1(f.fit) === hi), weak = r.fits.filter((f) => r1(f.fit) === lo);
+  const av = E.ATTRS.map((a) => r1(r.attributes[a.key])), ahi = Math.max(...av), alo = Math.min(...av);
+  const names = (xs) => xs.map((x) => x.name.split(" (")[0]).join(", ");
+  const html = hi === lo ? `<span>Even across all six use cases (${fmt(hi, 1)}).</span>`
+    : `<span><b>Strongest:</b> ${esc(names(strong))} ${fmt(hi, 1)}</span><span><b>Weakest:</b> ${esc(names(weak))} ${fmt(lo, 1)}</span><span class="sub">spread ${fmt(hi - lo, 1)}</span>`
+      + `<span class="sub">Attributes: best ${esc(names(E.ATTRS.filter((a, i) => av[i] === ahi)))} ${fmt(ahi, 1)}, lowest ${esc(names(E.ATTRS.filter((a, i) => av[i] === alo)))} ${fmt(alo, 1)}</span>`;
+  const tag = (f) => (hi === lo ? "" : r1(f.fit) === hi ? `<span class="chip sw-s">strongest</span>` : r1(f.fit) === lo ? `<span class="chip sw-w">weakest</span>` : "");
+  return { html, tag, strong, weak, hi, lo };
+}
+
+function renderIssues() {
+  const r = S.result;
+  const counts = ["High", "Medium", "Low", "Info"].map((s) => [s, r.issues.filter((i) => i.severity === s).length]).filter(([, n]) => n);
+  $("#issueSub").textContent = counts.length ? counts.map(([s, n]) => `${n} ${s.toLowerCase()}`).join(" · ") : "none";
+  $("#issueView").innerHTML = r.issues.length ? r.issues.map((i) => `<div class="issue ${i.severity}">
+      <div class="t"><span class="chip ${i.severity}">${i.severity}</span>${esc(i.title)} <span class="sub">· ${esc(i.area)}</span></div>
+      <p><b>Why it matters:</b> ${esc(i.why)}</p><p><b>Fix:</b> ${esc(i.fix)}</p></div>`).join("") : `<p class="ok">No issues found for this layup.</p>`;
+}
+
+function renderLayers() {
+  const r = S.result;
+  const names = { base: "Base", edges: "Steel edges", rubber: "Rubber", laminate: "Laminates", metal: "Metal", core: "Wood core", sidewall: "Sidewalls", topsheet: "Topsheet", resin: "Bond resin", extras: "Tip/tail fill & hardware" };
+  const total = Object.values(r.groupMass).reduce((a, x) => a + x, 0);
+  const maxM = Math.max(...Object.values(r.groupMass)), maxE = Math.max(...Object.values(r.groupEnergy));
+  const rows = Object.keys(names).filter((k) => r.groupMass[k] > 0.5).map((k) => {
+    const m = r.groupMass[k], e = (r.groupEnergy[k] || 0) * 100;
+    return `<tr><td>${names[k]}</td><td class="num">${U.fmt("massSmallG", m, S.units === "us" ? 1 : 0)}</td><td class="num"><span class="minibar" style="width:${(m / maxM * 70).toFixed(0)}px"></span>${fmt(m / total * 100)}%</td><td class="num">${["resin", "extras"].includes(k) ? "—" : `<span class="minibar" style="width:${(e / 100 / maxE * 70).toFixed(0)}px;background:var(--ref)"></span>${fmt(e)}%`}</td></tr>`;
+  }).join("");
+  $("#layerView").innerHTML = `<table class="data"><thead><tr><th>Layer group</th><th>Mass</th><th>Share of weight</th><th>Share of bending stiffness</th></tr></thead>
+    <tbody>${rows}<tr><td><b>Total</b></td><td class="num"><b>${U.fmt("massG", total)}</b></td><td></td><td></td></tr></tbody></table>
+    <p class="why" style="margin:8px 0 0">Bending share is the fraction of strain energy each group carries when the ski flexes, so it shows which layers actually set the stiffness.</p>`;
+}
+
+
+// ------------------------------------------------------------------ simple mode
+// Each simple choice is a named preset for part of the build. If the build was changed in the
+// Detailed view so it matches none of them, the choice shows as "Custom".
+const OZG = (oz) => Math.round(oz * E.OZ);
+const normFab = (list) => (list || []).filter((f) => f.gsm > 0).map((f) => ({ fiber: f.fiber, arch: f.arch, gsm: Math.round(f.gsm), plies: f.plies || 1 }));
+const normBlend = (bl) => (bl || []).filter((x) => x.pct > 0).map((x) => ({ wood: x.wood, pct: +x.pct })).sort((a, b) => a.wood.localeCompare(b.wood));
+const normMetal = (m) => (!m || m.material === "none" ? { m: "none" } : { m: m.material, t: Math.round(m.thicknessMm * 100) / 100, c: m.coverage ?? 1 });
+const metalPair = (mat, t) => mat === "none"
+  ? { metalBottom: { material: "none", thicknessMm: 0.5, coverage: 1 }, metalTop: { material: "none", thicknessMm: 0.5, coverage: 1 } }
+  : { metalBottom: { material: mat, thicknessMm: t, coverage: 1 }, metalTop: { material: mat, thicknessMm: t, coverage: 1 } };
+const fab = (fiber, arch, gsm) => ({ fiber, arch, gsm, plies: 1 });
+const SIMPLE_OPTS = {
+  profile: {
+    read: (b) => ({ c: b.camberMm, t: b.tipRockerCm, r: b.tailRockerCm }),
+    key: (v) => ({ c: v.camberMm, t: v.tipRockerCm, r: v.tailRockerCm }),
+    apply: (b, v) => Object.assign(b, v),
+    options: [
+      ["camber", "Full camber", "Grippy and energetic on groomers; less forgiving in bumps and soft snow.", { camberMm: 5, tipRockerCm: 0, tailRockerCm: 0 }],
+      ["allmtn", "Camber with tip rocker", "All-mountain: holds on hardpack, turns easily and floats a little.", { camberMm: 4, tipRockerCm: 30, tailRockerCm: 15 }],
+      ["rcr", "Rocker–camber–rocker (twin)", "Playful for park, switch riding and soft snow.", { camberMm: 3, tipRockerCm: 30, tailRockerCm: 25 }],
+      ["rocker", "Mostly rocker", "Loose and floaty; the least grip on ice.", { camberMm: 1, tipRockerCm: 45, tailRockerCm: 40 }],
+    ],
+  },
+  mount: {
+    read: (b) => b.mountOffsetCm, key: (v) => v.mountOffsetCm, apply: (b, v) => Object.assign(b, v),
+    options: [
+      ["trad", "Traditional (behind center)", "Strong front of the ski; best for carving and driving the tips.", { mountOffsetCm: -8 }],
+      ["prog", "Progressive", "More balanced; good all-mountain and for some tricks.", { mountOffsetCm: -4 }],
+      ["center", "Centered", "For park and spinning; needs a centered stance.", { mountOffsetCm: 0 }],
+    ],
+  },
+  core: {
+    read: (b) => normBlend(b.core.blend), key: (v) => normBlend(v.blend), apply: (b, v) => { b.core.blend = clone(v.blend); },
+    options: [
+      ["poplar", "Poplar", "Light and lively; the classic DIY core.", { blend: [{ wood: "poplar", pct: 100 }] }],
+      ["poplar-ash", "Poplar with ash", "Light, with stronger edges and better screw grip. A safe all-round choice.", { blend: [{ wood: "poplar", pct: 80 }, { wood: "ash", pct: 20 }] }],
+      ["poplar-beech", "Poplar with beech", "Heavier, damper and more stable at speed.", { blend: [{ wood: "poplar", pct: 70 }, { wood: "beech", pct: 30 }] }],
+      ["paulownia-ash", "Paulownia with ash", "Very light for touring or park; ash keeps the bindings secure.", { blend: [{ wood: "paulownia", pct: 75 }, { wood: "ash", pct: 25 }] }],
+      ["bamboo", "Bamboo", "Springy and tough, but heavier than poplar.", { blend: [{ wood: "bamboo", pct: 100 }] }],
+    ],
+  },
+  glass: {
+    read: (b) => ({ bot: normFab(b.laminatesBottom), top: normFab(b.laminatesTop) }),
+    key: (v) => ({ bot: normFab(v), top: normFab(v) }),
+    apply: (b, v) => { b.laminatesBottom = clone(v); b.laminatesTop = clone(v); },
+    options: [
+      ["none", "None yet", "No fabric above or below the core. Pick one: fiberglass is what gives a ski its strength and twist resistance.", []],
+      ["light", "Light fiberglass", "16 oz triax top and bottom. Lighter and softer; good for park and lighter skiers.", [fab("eglass", "triax", OZG(16))]],
+      ["std", "Standard fiberglass", "22 oz triax top and bottom. The usual DIY layup: good twist resistance and durability.", [fab("eglass", "triax", OZG(22))]],
+      ["strong", "Fiberglass + extra lengthwise glass", "Stiffer and more powerful, for bigger or faster skiers.", [fab("eglass", "triax", OZG(22)), fab("eglass", "ud", 300)]],
+      ["carbon", "Fiberglass + carbon", "Stiffer and poppier for little extra weight, but chattier.", [fab("eglass", "triax", OZG(16)), fab("carbon", "ud", 200)]],
+      ["flax", "Flax (natural fiber)", "Damp and smooth. Has to be kept dry before layup.", [fab("flax", "biax45", 400)]],
+      ["basalt", "Basalt", "Damper than glass with similar strength.", [fab("basalt", "triax", 600)]],
+    ],
+  },
+  metal: {
+    read: (b) => ({ bot: normMetal(b.metalBottom), top: normMetal(b.metalTop) }),
+    key: (v) => ({ bot: normMetal(v.metalBottom), top: normMetal(v.metalTop) }),
+    apply: (b, v) => Object.assign(b, clone(v)),
+    options: [
+      ["none", "No metal", "Lighter and more playful.", metalPair("none")],
+      ["al-thin", "Thin aluminum, both sides", "0.3 mm 7075 above and below the core: a bit more stability and damping.", metalPair("al7075", 0.3)],
+      ["al", "Aluminum, both sides", "0.5 mm 7075 above and below the core: damp, stable and grippy on hardpack. Heavier, and needs a strong press.", metalPair("al7075", 0.5)],
+      ["ti", "Titanal, both sides", "What charger and race skis use. Hard to buy as a home builder.", metalPair("titanal", 0.5)],
+    ],
+  },
+  sidewall: {
+    read: (b) => b.sidewall.material, key: (v) => v.material,
+    apply: (b, v) => { b.sidewall.material = v.material; if (v.material !== "cap" && !(b.sidewall.widthMm > 0)) b.sidewall.widthMm = 4; },
+    options: [
+      ["abs", "ABS sidewalls", "The standard: good edge grip.", { material: "abs" }],
+      ["phenolic", "Phenolic sidewalls", "Stiffer, for a little more grip and precision.", { material: "phenolic" }],
+      ["uhmw", "UHMW sidewalls", "The toughest against rock and rail hits.", { material: "uhmw" }],
+      ["cap", "Cap (no sidewall)", "Lighter and more forgiving; a bit less grip on ice.", { material: "cap" }],
+    ],
+  },
+  base: {
+    read: (b) => b.base.material, key: (v) => v.material, apply: (b, v) => { b.base.material = v.material; },
+    options: [
+      ["sintered", "Sintered", "Fast; needs regular waxing.", { material: "sintered" }],
+      ["extruded", "Extruded", "Slower, but low-maintenance and easy to repair.", { material: "extruded" }],
+      ["graphite", "Graphite race", "The fastest; needs the most care.", { material: "graphite" }],
+    ],
+  },
+};
+const simpleCurrent = (k) => {
+  const d = SIMPLE_OPTS[k], cur = JSON.stringify(d.read(S.build));
+  const hit = d.options.find((o) => JSON.stringify(d.key(o[3])) === cur);
+  return hit ? hit[0] : "";
+};
+function simpleSelect(k, title) {
+  const d = SIMPLE_OPTS[k], cur = simpleCurrent(k);
+  const opts = d.options.map(([key, name]) => `<option value="${key}"${key === cur ? " selected" : ""}>${esc(name)}</option>`).join("")
+    + (cur ? "" : `<option value="" selected>Custom (set in Detailed view)</option>`);
+  const desc = cur ? d.options.find((o) => o[0] === cur)[2] : "This part was customized in the Detailed view. Pick an option to replace it.";
+  return `<div class="sfield"><label class="slabel" for="s-${k}">${title}</label><select class="sel" id="s-${k}" data-simple="${k}">${opts}</select><p class="sdesc">${esc(desc)}</p></div>`;
+}
+function renderInputsSimple() {
+  const b = S.build;
+  $("#inputs").innerHTML = `
+  <div class="card">
+    <div class="group-title"><h3>Your ski</h3></div>
+    <table class="sheet">${sheetRows(SHAPE.slice(0, 4))}</table>
+    <div style="margin-top:12px">${simpleSelect("profile", "Camber profile")}${simpleSelect("mount", "Binding mount")}</div>
+  </div>
+  <div class="card">
+    <div class="group-title"><h3>What it's made of</h3></div>
+    ${simpleSelect("core", "Core wood")}
+    <div class="sfield"><div class="slabel"><span>Stiffness</span><span class="sword" id="stiffWord"></span></div>
+      <input type="range" class="range" data-path="core.underfootMm" min="8" max="14" step="0.25" value="${b.core.underfootMm}" aria-label="Stiffness (core thickness underfoot)">
+      <div class="range-ends"><span>Softer, easier</span><span id="stiffThick"></span><span>Stiffer, more powerful</span></div>
+      <p class="sdesc">Sets how thick the wood core is under your boot.</p></div>
+    ${simpleSelect("glass", "Fiberglass")}
+    ${simpleSelect("metal", "Metal")}
+    ${simpleSelect("sidewall", "Sides")}
+    ${simpleSelect("base", "Base")}
+    <div class="sfield"><label class="check"><input type="checkbox" data-path="rubber.on" ${b.rubber.on ? "checked" : ""}> Rubber strip over the edges <span class="hint">(recommended)</span></label></div>
+  </div>
+  <div class="card">
+    <div class="group-title"><h3>How you'll press it</h3></div>
+    <div class="sfield"><select class="sel" data-path="press" aria-label="Press">${opt(E.PRESSES, b.press)}</select>
+      <p class="sdesc">Decides whether metal layers can bond properly.</p></div>
+  </div>`;
+  $("#buildName").value = b.name || "";
+}
+$("#inputs").addEventListener("change", (e) => {
+  const sel = e.target.closest("[data-simple]"); if (!sel || !sel.value) return;
+  const d = SIMPLE_OPTS[sel.dataset.simple], o = d.options.find((x) => x[0] === sel.value);
+  if (!o) return;
+  d.apply(S.build, clone(o[3]));
+  renderInputs(); schedule();
+});
+
+const ATTR_TEXT = {
+  edge: ["Washes out on hard snow", "Holds on soft groomers, skids on ice", "Confident on most groomers", "Locks into hardpack", "Bites even on ice"],
+  damping: ["Very lively; chatters at speed", "Lively; some chatter when it's firm", "Smooth at moderate speed", "Calm and planted", "Glued to the snow at speed"],
+  pop: ["Quiet, little rebound", "Mellow rebound", "Springs out of turns", "Lively and poppy", "Very springy"],
+  glide: ["Slow", "A bit slow", "Average speed", "Fast", "Very fast"],
+  lightness: ["Very heavy", "Heavy, but stable", "Average weight", "Light and easy to swing", "Very light"],
+  durability: ["Fragile", "Needs care", "Durable", "Very durable", "Bombproof"],
+};
+const level5 = (v) => v < 2 ? 0 : v < 2.8 ? 1 : v < 3.5 ? 2 : v < 4.2 ? 3 : 4;
+const flexWord = (ei) => ei < 200 ? "Soft" : ei < 300 ? "Medium" : ei < 380 ? "Stiff" : "Very stiff";
+const turnWord = (R) => R < 13 ? "Short, quick turns" : R < 17 ? "Short-to-medium turns" : R < 21 ? "Medium-to-long turns" : "Long, fast turns";
+const fitWord = (f) => f >= 8 ? "Great" : f >= 7 ? "Good" : f >= 6 ? "OK" : "Not ideal";
+const plainName = (n) => n.replace(/ \(\d+\)$/, "");
+
+function renderSimple() {
+  const r = S.result, sc = r.scores, { best } = overlayInfo();
+  const by = (s) => r.issues.filter((i) => i.severity === s);
+  const highs = by("High"), meds = by("Medium"), lows = by("Low"), infos = by("Info");
+  let verdict, tone = "";
+  if (highs.length) { verdict = `Fix ${highs.length === 1 ? "one serious problem" : highs.length + " serious problems"} before you press this.`; tone = "high"; }
+  else if (meds.length) { verdict = `Buildable. ${meds.length === 1 ? "One thing is" : meds.length + " things are"} worth fixing first.`; tone = "med"; }
+  else verdict = "Ready to build.";
+  const fits = [...r.fits].sort((a, b) => b.fit - a.fit), swk = strengthsOf(r);
+  const short = (xs) => xs.map((f) => f.name.split(" (")[0].toLowerCase()).join(" and ");
+  const sub = swk.hi === swk.lo ? `Even across every use case. It should ride most like the ${plainName(best.ref.build.name)}.`
+    : `Strongest at ${short(swk.strong)}, weakest at ${short(swk.weak)}. It should ride most like the ${plainName(best.ref.build.name)}.`;
+  const ride = E.ATTRS.map((a) => {
+    const v = r.attributes[a.key];
+    return `<div class="ride-row"><div class="top-line"><span><span class="phrase">${ATTR_TEXT[a.key][level5(v)]}</span> <span class="an">· ${a.name}</span></span><span class="num">${fmt(v, 1)}/5</span></div>
+      <div class="track"><span class="fill" style="width:${(v - 1) / 4 * 100}%"></span></div></div>`;
+  }).join("");
+  const fitRows = fits.map((f) => `<div class="ride-row"><div class="top-line"><span><span class="phrase">${f.name}</span> ${swk.tag(f)}<span class="an">· ${fitWord(f.fit)}</span></span><span class="num">${fmt(f.fit, 1)}/10</span></div>
+      <div class="track"><span class="fill" style="width:${f.fit * 10}%"></span></div></div>`).join("");
+  const label = { High: "Must fix", Medium: "Should fix", Low: "Nice to fix" };
+  const fixCards = [...highs, ...meds, ...lows].map((i) => `<div class="fix ${i.severity}"><div class="t"><span class="chip ${i.severity}">${label[i.severity]}</span>${esc(i.plain?.title || i.title)}</div>
+      <p><b>Fix:</b> ${esc(i.plain?.fix || i.fix)}</p><details><summary>Why?</summary>${esc(i.why)}</details></div>`).join("");
+  const tips = infos.length ? `<details class="tips"><summary>Building tips (${infos.length})</summary><ul>${infos.map((i) => `<li><b>${esc(i.title)}.</b> ${esc(i.fix)}</li>`).join("")}</ul></details>` : "";
+  $("#simpleView").innerHTML = `
+    <div class="card">
+      <div class="sum-top"><div class="sum-score"><span class="k">Overall</span><span class="v">${fmt(sc.overall, 1)}<small>/10</small></span></div>
+        <div><p class="verdict ${tone}">${verdict}</p><p class="sum-sub">${esc(sub)}</p></div></div>
+      <div class="chips2">
+        <div class="chip2"><span class="k">Turns</span><b>${turnWord(r.geometry.sidecutR)}</b><span class="sub">sidecut ${U.fmt("lenM", r.geometry.sidecutR)}</span></div>
+        <div class="chip2"><span class="k">Flex</span><b>${flexWord(r.zones.EI.underfoot)}</b><span class="sub">underfoot</span></div>
+        <div class="chip2"><span class="k">Weight per ski</span><b>${U.fmt("massG", r.weightG)}</b><span class="sub">${level5(r.attributes.lightness) >= 3 ? "light" : level5(r.attributes.lightness) <= 1 ? "on the heavy side" : "about average"}</span></div>
+        <div class="chip2"><span class="k">Rides like</span><b>${esc(plainName(best.ref.build.name))}</b><span class="sub">${fmt(best.sim, 0)}% similar</span></div>
+      </div>
+    </div>
+    <div class="cols2" style="margin-top:12px">
+      <div class="card"><header><h2>How it will ride</h2></header><div class="ride">${ride}</div></div>
+      <div class="card"><header><h2>Strengths and weaknesses</h2><span class="sub">all six count equally</span></header><div class="ride">${fitRows}</div></div>
+    </div>
+    <div class="card" style="margin-top:12px"><header><h2>Before you build</h2><span class="sub">${highs.length + meds.length + lows.length ? `${highs.length + meds.length + lows.length} to look at` : "nothing to fix"}</span></header>
+      <div class="fixes">${fixCards || `<p class="ok" style="margin:0">No problems found. Nice layup.</p>`}</div>${tips}</div>`;
+  const sw = $("#stiffWord"), st = $("#stiffThick");
+  if (sw) sw.textContent = flexWord(r.zones.EI.underfoot);
+  if (st) st.textContent = U.fmt("thickMm", S.build.core.underfootMm, S.units === "us" ? 3 : 2) + " core";
+}
+
+// ------------------------------------------------------------------ projects & iterations
+// A project is one ski. Every save adds an iteration (v1, v2, …) instead of overwriting, so an
+// older version stays in the database even when a newer one turns out worse.
+const MAX_ITERS = 80, MAX_DOC = 240000;
+function summaryOf(r, b = S.build) { return { overall: r.scores.overall, performance: r.scores.performance, buildQuality: r.scores.buildQuality, weightG: Math.round(r.weightG), costUSD: E.billOfMaterials(b).total }; }
+const snap = (b) => JSON.stringify({ ...b, name: "" }); // the name isn't part of a design change
+function isDirty() { return S.savedSnap !== snap(S.build); }
+function toProject(d) {
+  if (!d) return null;
+  if (d.kind === "project" && Array.isArray(d.iterations) && d.iterations.length) {
+    return { id: d.id, name: d.name || "Untitled project", createdAt: d.createdAt || 0, updatedAt: d.updatedAt || d.savedAt || 0, iterations: d.iterations.slice().sort((a, b) => a.n - b.n) };
+  }
+  if (d.build) { // a build saved before projects existed: shown as a one-iteration project
+    return { id: d.id, name: d.name || "Untitled", createdAt: d.createdAt || d.savedAt || 0, updatedAt: d.savedAt || 0, legacy: true,
+      iterations: [{ id: "i1", n: 1, label: "v1", note: "", star: false, savedAt: d.savedAt || 0, build: d.build, summary: d.summary || null }] };
+  }
+  return null;
+}
+const projectById = (id) => S.projects.find((p) => p.id === id) || null;
+const currentProject = () => projectById(S.projectId);
+const iterById = (p, iid) => (p ? p.iterations.find((i) => i.id === iid) || null : null);
+const nextN = (p) => (p ? Math.max(0, ...p.iterations.map((i) => i.n)) + 1 : 1);
+function analyzeIter(pid, it) {
+  const key = pid + "|" + it.id + "|" + (it.savedAt || 0) + "|" + S.units;
+  if (!S.analysisCache.has(key)) {
+    const nb = normalizeBuild(it.build);
+    S.analysisCache.set(key, Object.assign(E.analyze(nb, { units: S.units }), { costUSD: E.billOfMaterials(nb).total }));
+  }
+  return S.analysisCache.get(key);
+}
+// Scored live (cached), so older saves re-score under the current rules instead of keeping stale numbers.
+const iterScore = (pid, it) => analyzeIter(pid, it).scores.overall;
+function bestIter(p) {
+  let best = null, bv = -Infinity;
+  for (const it of p.iterations) { const v = iterScore(p.id, it); if (v > bv + 1e-9) { bv = v; best = it; } }
+  return best;
+}
+async function writeProject(p) {
+  const doc = { kind: "project", name: p.name, createdAt: p.createdAt, updatedAt: p.updatedAt, iterations: p.iterations, engine: E.ENGINE_VERSION };
+  if (JSON.stringify(doc).length > MAX_DOC) { notice(`“${esc(p.name)}” is full. Delete a few old iterations or start a new project.`); return false; }
+  return writeSave(p.id, doc);
+}
+
+async function saveIteration() {
+  if (!S.result) return;
+  const p = currentProject();
+  if (p && !isDirty()) return;
+  if (p && p.iterations.length >= MAX_ITERS) { notice(`“${esc(p.name)}” has ${MAX_ITERS} iterations, the most a project holds. Delete some old ones or start a new project.`); return; }
+  const now = Date.now(), name = (S.build.name || "").trim() || "Untitled project", n = nextN(p);
+  S.build.name = name;
+  const it = { id: "i" + now.toString(36) + Math.random().toString(36).slice(2, 6), n, label: "v" + n, note: "", star: false, savedAt: now,
+    basedOn: p && S.iterId ? S.iterId : null, build: clone(S.build), summary: summaryOf(S.result) };
+  const proj = p ? { ...clone(p), name, updatedAt: now, iterations: [...clone(p.iterations), it] } : { id: newId(), name, createdAt: now, updatedAt: now, iterations: [it] };
+  const btn = $("#saveBtn"); btn.disabled = true;
+  const ok = await writeProject(proj);
+  btn.disabled = false;
+  if (ok) { S.projectId = proj.id; S.iterId = it.id; S.savedSnap = snap(S.build); $("#buildName").value = name; updateState(); saveWorking(); }
+}
+async function saveAsNewProject() {
+  if (S.projects.some((p) => p.name === S.build.name)) S.build.name = (S.build.name || "Untitled project") + " (copy)";
+  $("#buildName").value = S.build.name;
+  S.projectId = null; S.iterId = null; S.savedSnap = null;
+  await saveIteration();
+}
+$("#saveBtn").addEventListener("click", saveIteration);
+$("#saveAsBtn").addEventListener("click", saveAsNewProject);
+document.addEventListener("keydown", (e) => { if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s") { e.preventDefault(); saveIteration(); } });
+
+// Open a saved iteration (ref) or, with no ref, put a new design into the current project so
+// saving it adds the next iteration.
+function loadBuild(build, ref = null) {
+  S.build = normalizeBuild(build);
+  if (ref) {
+    const p = projectById(ref.projectId);
+    S.projectId = ref.projectId; S.iterId = ref.iterId;
+    if (p) S.build.name = p.name;
+    S.savedSnap = snap(S.build);
+  } else {
+    const p = currentProject();
+    if (p) S.build.name = p.name;
+  }
+  renderInputs(); schedule();
+}
+function startNewProject(build) {
+  S.projectId = null; S.iterId = null; S.savedSnap = null;
+  S.build = normalizeBuild({ ...clone(build), name: "Untitled project" });
+  renderInputs(); schedule();
+}
+function openIteration(pid, iid) {
+  const p = projectById(pid), it = iterById(p, iid);
+  if (!it) return;
+  loadBuild(it.build, { projectId: pid, iterId: iid });
+  if (document.documentElement.dataset.tab !== "design") location.hash = "design";
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+let renameTimer = 0;
+$("#buildName").addEventListener("input", (e) => {
+  S.build.name = e.target.value; saveWorking();
+  const p = currentProject();
+  if (!p) return;
+  clearTimeout(renameTimer);
+  renameTimer = setTimeout(() => { const nm = (S.build.name || "").trim(); if (nm && nm !== p.name) writeProject({ ...clone(p), name: nm }); }, 700);
+});
+
+// ---- what a design is made of, in words (for the iteration table and tooltips)
+function materialsOf(b) {
+  const us = S.units === "us";
+  const blend = b.core.blend.filter((x) => x.pct > 0 && E.WOODS[x.wood]);
+  const tot = blend.reduce((a, x) => a + x.pct, 0) || 1;
+  const wood = (w) => E.WOODS[w].name.split(" (")[0].toLowerCase();
+  const fab = (l) => (l || []).filter((f) => f.gsm > 0).map((f) => `${U.fmt("arealGsm", f.gsm * (f.plies || 1))} ${E.FIBERS[f.fiber].name.split(" (")[0].replace("E-glass", "glass").toLowerCase()} ${E.ARCHITECTURES[f.arch].name.split(" ")[0].toLowerCase()}`).join(" + ") || "none";
+  const met = (m) => (!m || m.material === "none" ? "none" : `${U.fmt("thickMm", m.thicknessMm, us ? 3 : 1)} ${m.material === "al7075" ? "7075" : "titanal"}${(m.coverage ?? 1) < 1 ? ` (${Math.round(m.coverage * 100)}%)` : ""}`);
+  const both = (t, bo, none) => (t === bo ? (t === "none" ? none : `${t}, top & bottom`) : `top ${t}; bottom ${bo}`);
+  return [
+    ["Core", `${blend.map((x) => `${Math.round(x.pct / tot * 100)}% ${wood(x.wood)}`).join(", ")} · ${U.fmt("thickMm", b.core.underfootMm, us ? 3 : 1)} underfoot`],
+    ["Fiberglass", both(fab(b.laminatesTop), fab(b.laminatesBottom), "none")],
+    ["Metal", both(met(b.metalTop), met(b.metalBottom), "none")],
+    ["Sides", E.SIDEWALLS[b.sidewall.material].name],
+    ["Base", E.BASES[b.base.material].name],
+    ["Rubber", b.rubber.on ? "yes" : "no"],
+    ["Topsheet", E.TOPSHEETS[b.topsheet.material].name],
+    ["Shape", `${U.fmt("lenCm", b.lengthCm)} · ${U.n("widthMm", b.tipWidth)}/${U.n("widthMm", b.waistWidth)}/${U.n("widthMm", b.tailWidth)} ${U.unit("widthMm")}`],
+    ["Profile", `camber ${U.fmt("thickMm", b.camberMm, us ? 2 : 1)}, rocker ${U.n("lenCm", b.tipRockerCm, 0)}/${U.n("lenCm", b.tailRockerCm, 0)} ${U.unit("lenCm")}`],
+    ["Press", (E.PRESSES[b.press] || E.PRESSES.undecided).name],
+  ];
+}
+function changesBetween(prev, cur) {
+  if (!prev) return [];
+  const a = Object.fromEntries(materialsOf(normalizeBuild(prev))), out = [];
+  for (const [k, v] of materialsOf(normalizeBuild(cur))) if (a[k] !== v) out.push([k, a[k], v]);
+  return out;
+}
+
+// ---- Why an iteration scored higher or lower than the one it came from.
+// Each change is tested alone on the earlier build, so every number below is what that one change did.
+const CHANGE_GROUPS = [
+  ["Core", ["core"]], ["Fiberglass", ["laminatesTop", "laminatesBottom"]], ["Metal", ["metalTop", "metalBottom"]],
+  ["Sides", ["sidewall"]], ["Base", ["base"]], ["Edges", ["edges"]], ["Rubber", ["rubber"]], ["Topsheet", ["topsheet"]],
+  ["Shape", ["lengthCm", "tipWidth", "waistWidth", "tailWidth", "waistOffsetCm", "tipContactCm", "tailContactCm", "mountOffsetCm"]],
+  ["Profile", ["camberMm", "tipRockerCm", "tailRockerCm"]], ["Resin & extras", ["vf", "bondGsm", "extrasG"]], ["Press", ["press"]],
+];
+const KEY_TEXT = {
+  waistOffsetCm: (b) => `waist ${U.fmt("lenCm", b.waistOffsetCm, 1)} from center`, tipContactCm: (b) => `tip contact ${U.fmt("lenCm", b.tipContactCm, 0)}`,
+  tailContactCm: (b) => `tail contact ${U.fmt("lenCm", b.tailContactCm, 0)}`, mountOffsetCm: (b) => `mount ${U.fmt("lenCm", b.mountOffsetCm, 1)}`,
+  edges: (b) => `${U.fmt("thickMm", b.edges.widthMm, 1)} × ${U.fmt("thickMm", b.edges.heightMm, 1)} steel edges`,
+  vf: (b) => `${Math.round(b.vf * 100)}% fiber`, bondGsm: (b) => `${U.fmt("arealGsm", b.bondGsm)} bond resin`, extrasG: (b) => `${U.fmt("massG", b.extrasG)} extras`,
+};
+function changeGroups(a, b) {
+  const known = new Set(CHANGE_GROUPS.flatMap(([, ks]) => ks).concat("name"));
+  const extra = Object.keys({ ...a, ...b }).filter((k) => !known.has(k));
+  const ma = Object.fromEntries(materialsOf(a)), mb = Object.fromEntries(materialsOf(b));
+  const same = (k) => JSON.stringify(a[k]) === JSON.stringify(b[k]);
+  const describe = (x, ks) => ks.map((k) => (KEY_TEXT[k] ? KEY_TEXT[k](x) : `${k} ${JSON.stringify(x[k])}`)).join(", ");
+  return [...CHANGE_GROUPS, ...(extra.length ? [["Other settings", extra]] : [])].map(([name, ks]) => {
+    const keys = ks.filter((k) => !same(k)); if (!keys.length) return null;
+    let from = ma[name], to = mb[name];
+    if (from == null || from === to) { from = describe(a, keys); to = describe(b, keys); }
+    // Keep only the parts that differ ("10.5 mm underfoot → 11.5 mm underfoot", not the whole core).
+    const fa = from.split(" · "), fb = to.split(" · ");
+    if (fa.length === fb.length && fa.length > 1) { const k = fa.map((x, i) => x !== fb[i]); from = fa.filter((_, i) => k[i]).join(" · "); to = fb.filter((_, i) => k[i]).join(" · "); }
+    return { name, keys, from, to };
+  }).filter(Boolean);
+}
+const analyzeB = (b) => Object.assign(E.analyze(b, { units: S.units }), { costUSD: E.billOfMaterials(b).total });
+// Unrounded scores, so a small change still shows its real size.
+const rawScores = (r) => { const perf = r.fits.reduce((s, f) => s + f.fit, 0) / r.fits.length, q = r.scores.buildQuality; return { perf, q, overall: (perf + q) / 2 }; };
+const flagKey = (i) => i.title.replace(/\(.*?\)/g, "").replace(/[\d.,×%]+/g, "#").trim();
+function flagDiff(ra, rb) {
+  const real = (r) => new Map(r.issues.filter((i) => i.severity !== "Info").map((i) => [flagKey(i), i]));
+  const A = real(ra), B = real(rb);
+  return { added: [...B].filter(([k, i]) => !A.has(k) || A.get(k).severity !== i.severity).map(([, i]) => i),
+    fixed: [...A].filter(([k, i]) => !B.has(k) || B.get(k).severity !== i.severity).map(([, i]) => i) };
+}
+function deltas(ra, rb) {
+  const a = rawScores(ra), b = rawScores(rb);
+  return { overall: b.overall - a.overall, perf: b.perf - a.perf, q: b.q - a.q, weightG: rb.weightG - ra.weightG, costUSD: rb.costUSD - ra.costUSD,
+    attrs: E.ATTRS.map((x) => ({ name: x.name, d: rb.attributes[x.key] - ra.attributes[x.key] })),
+    fits: rb.fits.map((f, i) => ({ name: f.name.split(" (")[0], d: f.fit - ra.fits[i].fit })), flags: flagDiff(ra, rb) };
+}
+const WHY_CACHE = new Map();
+function explainIter(prevBuild, curBuild) {
+  const key = S.units + "|" + snap(prevBuild) + "|" + snap(curBuild);
+  if (WHY_CACHE.has(key)) return WHY_CACHE.get(key);
+  const a = normalizeBuild(prevBuild), b = normalizeBuild(curBuild), ra = analyzeB(a), rb = analyzeB(b);
+  const effects = changeGroups(a, b).map((g) => {
+    const t = clone(a); for (const k of g.keys) t[k] = clone(b[k]);
+    return { ...g, d: deltas(ra, analyzeB(t)) };
+  }).sort((x, y) => Math.abs(y.d.overall) - Math.abs(x.d.overall));
+  const out = { ra, rb, d: deltas(ra, rb), effects };
+  if (WHY_CACHE.size > 80) WHY_CACHE.clear();
+  WHY_CACHE.set(key, out);
+  return out;
+}
+const sgn = (v, dec) => (v > 0 ? "+" : v < 0 ? "−" : "±") + fmt(Math.abs(v), dec);
+const sgnU = (kind, v) => (v > 0 ? "+" : v < 0 ? "−" : "±") + U.fmt(kind, Math.abs(v));
+const tone = (v, lowerIsBetter = false, eps = 1e-9) => (Math.abs(v) < eps ? "flat" : (v > 0) !== lowerIsBetter ? "good" : "bad");
+const dspan = (v, text, lowerIsBetter, eps) => `<span class="delta ${tone(v, lowerIsBetter, eps)}">${text}</span>`;
+function movers(list, n = 2, eps = 0.05) {
+  const up = list.filter((x) => x.d >= eps).sort((a, b) => b.d - a.d).slice(0, n), dn = list.filter((x) => x.d <= -eps).sort((a, b) => a.d - b.d).slice(0, n);
+  return [...up, ...dn].map((x) => `${esc(x.name)} ${dspan(x.d, sgn(x.d, 1))}`).join(", ");
+}
+function whyBody(x, g, prevLabel) {
+  const { ra, rb, d, effects } = x, r1 = (v) => Math.round(v * 10) / 10;
+  const oA = r1(ra.scores.overall), oB = r1(rb.scores.overall), dO = r1(oB - oA);
+  const head = dO === 0 ? `Overall stayed at <b>${fmt(oB, 1)}</b>, the same as ${esc(prevLabel)}.`
+    : `Overall went from <b>${fmt(oA, 1)}</b> to <b>${fmt(oB, 1)}</b>, ${dspan(dO, `${fmt(Math.abs(dO), 1)} ${dO > 0 ? "higher" : "lower"}`)} than ${esc(prevLabel)}${Math.abs(d.overall - dO) >= 0.02 ? ` (${sgn(d.overall, 2)} before rounding)` : ""}.`;
+  const pA = ra.scores.performance, pB = rb.scores.performance, qA = ra.scores.buildQuality, qB = rb.scores.buildQuality;
+  const fm = movers(d.fits, 3);
+  const perfLine = Math.abs(d.perf) < 0.005 ? `<li>Performance held at ${fmt(pB, 1)}.</li>`
+    : `<li>Performance ${fmt(pA, 1)} → ${fmt(pB, 1)} (${dspan(d.perf, sgn(d.perf, 2))})${fm ? `: ${fm}` : ""}.</li>`;
+  const fl = d.flags, flagText = (xs) => xs.map((i) => `<span class="chip ${i.severity}">${i.severity}</span>${esc(i.plain?.title || i.title)}`).join(" ");
+  const qLine = qA === qB ? `<li>Build quality held at ${fmt(qB, 1)}${fl.added.length || fl.fixed.length ? " (flags swapped at the same severity)" : ""}.</li>`
+    : `<li>Build quality ${fmt(qA, 1)} → ${fmt(qB, 1)} (${dspan(qB - qA, sgn(qB - qA, 1))})${fl.added.length ? `: new ${flagText(fl.added)}` : ""}${fl.fixed.length ? `${fl.added.length ? "; " : ": "}fixed ${flagText(fl.fixed)}` : ""}.</li>`;
+  const am = movers(d.attrs, 2);
+  const sa = strengthsOf(ra), sb = strengthsOf(rb), nm = (xs) => xs.map((f) => f.name.split(" (")[0]).join(", ");
+  const swLine = sb.hi === sb.lo ? "" : `<li>Strongest now ${esc(nm(sb.strong))} ${fmt(sb.hi, 1)}${nm(sa.strong) !== nm(sb.strong) ? ` (was ${esc(nm(sa.strong))})` : ""}; weakest ${esc(nm(sb.weak))} ${fmt(sb.lo, 1)}${nm(sa.weak) !== nm(sb.weak) ? ` (was ${esc(nm(sa.weak))})` : ""}.</li>`;
+  const chartLine = g.key === "scores" ? "" : `<li>On this chart (${esc(g.name)}): ${g.series.map(([n, f]) => { const va = f(ra), vb = f(rb), lib = g.key === "weight" || g.key === "cost"; const un = ["scores", "ride", "fits"].includes(g.key) ? "" : g.key === "cost" ? "" : " " + g.unit, $$ = g.key === "cost" ? "$" : "";
+    return `${esc(n.split(" (")[0])} ${$$}${fmt(va, g.dec)} → ${$$}${fmt(vb, g.dec)}${un}${Math.abs(vb - va) >= Math.pow(10, -g.dec) / 2 ? ` (${dspan(vb - va, sgn(vb - va, g.dec), lib)})` : ""}`; }).join("; ")}.</li>`;
+  const eff = effects.map((e) => {
+    const parts = [movers(e.d.attrs, 2), Math.abs(e.d.weightG) >= 1 ? `weight ${dspan(e.d.weightG, sgnU("massG", e.d.weightG), true)}` : "", Math.abs(e.d.costUSD) >= 1 ? `cost ${dspan(e.d.costUSD, (e.d.costUSD > 0 ? "+$" : "−$") + fmt(Math.abs(e.d.costUSD)), true)}` : "",
+      e.d.flags.added.length ? `adds ${flagText(e.d.flags.added)}` : "", e.d.flags.fixed.length ? `fixes ${flagText(e.d.flags.fixed)}` : ""].filter(Boolean).join(" · ");
+    return `<div class="eff"><div class="eff-h"><b>${esc(e.name)}</b>${dspan(e.d.overall, `${sgn(e.d.overall, 2)} overall`, false, 0.005)}</div>
+      <div class="eff-ft">${esc(e.from)} <span class="arrow">→</span> ${esc(e.to)}</div>${parts ? `<div class="eff-m">${parts}</div>` : ""}</div>`;
+  }).join("");
+  const sum = effects.reduce((s, e) => s + e.d.overall, 0), rest = d.overall - sum;
+  const restLine = effects.length > 1 && Math.abs(rest) >= 0.05 ? `<p class="why" style="margin:6px 0 0">Tested one at a time the changes add up to ${sgn(sum, 2)}; together they come to ${sgn(d.overall, 2)}, because they interact (${dspan(rest, sgn(rest, 2), false)}).</p>` : "";
+  const lead = effects.length && Math.abs(effects[0].d.overall) >= 0.005 ? `<p class="lead">Biggest reason: <b>${esc(effects[0].name)}</b> (${esc(effects[0].from)} → ${esc(effects[0].to)}), ${dspan(effects[0].d.overall, `${sgn(effects[0].d.overall, 2)} overall`)}.</p>` : "";
+  return `<p class="whyhead">${head}</p>${lead}
+    <ul class="whylist-ul">${perfLine}${qLine}${am ? `<li>Ride: ${am}.</li>` : ""}${swLine}${chartLine}</ul>
+    ${effects.length ? `<h4>What changed, and what each change did on its own</h4><div class="effs">${eff}</div>${restLine}` : `<p class="empty" style="margin:6px 0 0">Nothing in the design changed from ${esc(prevLabel)}.</p>`}`;
+}
+
+// ---- Design tab: this project's iterations
+function renderProjectCard() {
+  const el = $("#projCardBody"); if (!el) return;
+  const p = currentProject();
+  const tab = document.querySelector('#tabs [data-tab="projects"]');
+  if (tab) tab.textContent = S.projects.length ? `Projects (${S.projects.length})` : "Projects";
+  if (!p) {
+    $("#projCardTitle").textContent = "Project";
+    const others = S.projects.slice(0, 4).map((q) => `<div class="bitem"><span></span><div style="min-width:0"><div class="bn">${esc(q.name)}</div><div class="bm">${q.iterations.length} iteration${q.iterations.length === 1 ? "" : "s"} · ${when(q.updatedAt)}</div></div>
+      <div class="ba"><button class="btn small" data-popen="${esc(q.id)}">Open latest</button></div></div>`).join("");
+    el.innerHTML = `<p class="empty" style="margin-top:0">This design isn't saved yet. <b>Save v1</b> starts a project; every save after that adds the next iteration (v2, v3, …), so earlier versions are never lost.</p>
+      ${others ? `<h3 style="margin:12px 0 6px">Your projects</h3><div class="blist">${others}</div>` : ""}
+      ${S.projects.length ? `<p class="sub2"><a href="#projects">All projects and progress charts →</a></p>` : ""}`;
+    return;
+  }
+  $("#projCardTitle").textContent = p.name;
+  const best = bestIter(p);
+  const rows = p.iterations.slice().reverse().slice(0, 6).map((it) => {
+    const cur = it.id === S.iterId, sm = summaryOf(analyzeIter(p.id, it), normalizeBuild(it.build)), key = p.id + "|" + it.id;
+    return `<div class="bitem${cur ? " current" : ""}">
+      <input type="checkbox" data-cmp="${esc(key)}" ${S.compare.has(key) ? "checked" : ""} aria-label="Compare ${esc(it.label)}">
+      <div style="min-width:0"><div class="bn">${esc(it.label)}${it.star ? ` <span class="star on" title="Kept">★</span>` : ""}${best && best.id === it.id && p.iterations.length > 1 ? ` <span class="chip best-chip">best</span>` : ""}${cur ? ` <span class="sub">· open${isDirty() ? ", unsaved changes" : ""}</span>` : ""}</div>
+        <div class="bm">${when(it.savedAt)} · overall <span class="num">${fmt(sm.overall, 1)}</span> · <span class="num">${U.fmt("massG", sm.weightG)}</span>${sm.costUSD ? ` · <span class="num">$${fmt(sm.costUSD)}</span>` : ""}${it.note ? ` · ${esc(it.note)}` : ""}</div></div>
+      <div class="ba">${cur ? "" : `<button class="btn small" data-iopen="${esc(key)}">Open</button>`}</div></div>`;
+  }).join("");
+  el.innerHTML = `<div class="proj-top"><span class="sub">${p.iterations.length} iteration${p.iterations.length === 1 ? "" : "s"}${p.iterations.length > 6 ? ", newest 6 shown" : ""}</span>${sparkline(p)}</div>
+    <div class="blist">${rows}</div>
+    <p class="sub2"><a href="#projects">Progress charts and every iteration →</a></p>`;
+}
+function sparkline(p) {
+  if (p.iterations.length < 2) return "";
+  const vs = p.iterations.map((it) => iterScore(p.id, it)), lo = Math.min(...vs), hi = Math.max(...vs), W = 120, H = 28;
+  const x = (i) => 3 + i * (W - 6) / (vs.length - 1), y = (v) => H - 4 - (hi === lo ? 0.5 : (v - lo) / (hi - lo)) * (H - 8);
+  const bi = vs.indexOf(hi);
+  return `<svg class="spark" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="Overall score by iteration, from ${fmt(vs[0], 1)} to ${fmt(vs.at(-1), 1)}, best ${fmt(hi, 1)}">
+    <path d="M${vs.map((v, i) => `${x(i).toFixed(1)},${y(v).toFixed(1)}`).join("L")}" class="sl"/><circle cx="${x(bi)}" cy="${y(hi)}" r="3" class="sd"/></svg>`;
+}
+document.addEventListener("click", (e) => {
+  const o = e.target.closest("[data-iopen]");
+  if (o) { const [pid, iid] = o.dataset.iopen.split("|"); return openIteration(pid, iid); }
+  const po = e.target.closest("[data-popen]");
+  if (po) { const p = projectById(po.dataset.popen); if (p) openIteration(p.id, p.iterations.at(-1).id); }
+});
+document.addEventListener("change", (e) => {
+  const cb = e.target.closest("[data-cmp]"); if (!cb) return;
+  if (cb.checked) S.compare.add(cb.dataset.cmp); else S.compare.delete(cb.dataset.cmp);
+  for (const other of document.querySelectorAll(`[data-cmp="${CSS.escape(cb.dataset.cmp)}"]`)) other.checked = cb.checked;
+  renderCompare();
+});
+$("#refPicks").innerHTML = REF.map((x) => `<label class="pill"><input type="checkbox" data-refcmp="${x.id}"> ${esc(x.build.name)}</label>`).join("");
+$("#refPicks").addEventListener("change", (e) => {
+  const cb = e.target.closest("[data-refcmp]"); if (!cb) return;
+  if (cb.checked) S.refCompare.add(cb.dataset.refcmp); else S.refCompare.delete(cb.dataset.refcmp);
+  renderCompare();
+});
+
+// ---- Projects tab
+const TREND_GROUPS = () => {
+  const us = S.units === "us";
+  return [
+    { key: "scores", name: "Scores", unit: "out of 10", dec: 1, clamp: [0, 10], series: [["Overall", (r) => r.scores.overall], ["Performance", (r) => r.scores.performance], ["Build quality", (r) => r.scores.buildQuality]] },
+    { key: "ride", name: "Ride", unit: "1–5", dec: 1, clamp: [1, 5], series: E.ATTRS.map((a) => [a.name, (r) => r.attributes[a.key]]) },
+    { key: "fits", name: "Use cases", unit: "out of 10", dec: 1, clamp: [0, 10], series: E.USE_CASES.map((u, i) => [u.name, (r) => r.fits[i].fit]) },
+    { key: "weight", name: "Weight", unit: U.unit("massG"), dec: us ? 2 : 0, series: [["Per ski", (r) => U.val("massG", r.weightG)], [`Scaled to ${U.fmt("lenCm", 177)}`, (r) => U.val("massG", r.weight177)]] },
+    { key: "cost", name: "Cost", unit: "$ per pair", dec: 0, series: [["Materials for a pair", (r) => r.costUSD]] },
+    { key: "stiff", name: "Stiffness", unit: U.unit("stiffNm2"), dec: 0, adv: true, series: [["Underfoot bending (EI)", (r) => U.val("stiffNm2", r.zones.EI.underfoot)], ["Forebody bending (EI)", (r) => U.val("stiffNm2", r.zones.EI.forebody)], ["Forebody torsion (GJ)", (r) => U.val("stiffNm2", r.zones.GJ.forebody)]] },
+    { key: "flex", name: "Flex", unit: U.unit("rateNmm"), dec: 1, adv: true, series: [["Center flex", (r) => U.val("rateNmm", r.flexRate)]] },
+  ];
+};
+S.pv = { project: null, group: "scores", show: "all", sort: "old", confirmDel: null, whyOpen: new Set() };
+
+function niceStep(range, n) {
+  const raw = range / n, p = Math.pow(10, Math.floor(Math.log10(raw)));
+  for (const m of [1, 2, 2.5, 5, 10]) if (m * p >= raw) return m * p;
+  return 10 * p;
+}
+// Line chart of one metric group across iterations. points: [{label, sub, now, values[]}]
+function trendChart(el, { points, series, unit, dec, clamp, title, onPick }) {
+  // Drawn at the container's real width so text stays at its true size.
+  const W = Math.max(320, Math.round(el.clientWidth || 680)), H = 260, direct = series.length <= 4 && points.length > 1 && W >= 560;
+  const m = { l: 52, r: direct ? 150 : 16, t: 14, b: 34 };
+  const all = points.flatMap((p) => p.values).filter(Number.isFinite);
+  let lo = Math.min(...all), hi = Math.max(...all);
+  if (lo === hi) { lo -= 0.5 * (Math.abs(lo) || 1) * 0.1 + 0.5; hi += 0.5; }
+  const pad = (hi - lo) * 0.15; lo -= pad; hi += pad;
+  if (clamp) { lo = Math.max(clamp[0], lo); hi = Math.min(clamp[1], hi); }
+  const step = niceStep(hi - lo, 4); lo = Math.floor(lo / step) * step; hi = Math.ceil(hi / step) * step;
+  if (clamp) { lo = Math.max(clamp[0], lo); hi = Math.min(clamp[1], hi); }
+  const n = points.length, X = (i) => (n === 1 ? (m.l + W - m.r) / 2 : m.l + i * (W - m.l - m.r) / (n - 1)), Y = (v) => H - m.b - (v - lo) / (hi - lo) * (H - m.t - m.b);
+  const tickDec = step < 1 ? (step < 0.1 ? 2 : 1) : 0;
+  const grid = [];
+  for (let v = lo; v <= hi + step / 2; v += step) grid.push(`<line class="gridl" x1="${m.l}" x2="${W - m.r}" y1="${Y(v)}" y2="${Y(v)}"/><text class="axt" x="${m.l - 6}" y="${Y(v) + 4}" text-anchor="end">${fmt(v, tickDec)}</text>`);
+  const every = Math.max(1, Math.ceil(n / Math.max(2, Math.floor((W - m.l - m.r) / 52))));
+  const xl = points.map((p, i) => (i % every === 0 || i === n - 1 ? `<text class="axt${p.best ? " axbest" : ""}" x="${X(i)}" y="${H - m.b + 16}" text-anchor="middle">${esc(p.label)}${p.best ? " ★" : ""}</text>` : "")).join("");
+  const lines = series.map((s, si) => {
+    const pts = points.map((p, i) => [X(i), p.values[si]]).filter(([, v]) => Number.isFinite(v));
+    const saved = points.map((p, i) => [i, p]).filter(([, p]) => !p.now && Number.isFinite(p.values[si]));
+    const nowP = points.findIndex((p) => p.now);
+    const solid = saved.map(([i, p]) => `${X(i).toFixed(1)},${Y(p.values[si]).toFixed(1)}`).join("L");
+    let dashed = "";
+    if (nowP >= 0 && saved.length && Number.isFinite(points[nowP].values[si])) { const [li, lp] = saved.at(-1); dashed = `<path class="tl s${si + 1} dash" d="M${X(li)},${Y(lp.values[si])}L${X(nowP)},${Y(points[nowP].values[si])}"/>`; }
+    const dots = points.map((p, i) => (Number.isFinite(p.values[si]) ? `<circle class="td s${si + 1}${p.now ? " hollow" : ""}" cx="${X(i)}" cy="${Y(p.values[si])}" r="4"/>` : "")).join("");
+    return { svg: `${solid ? `<path class="tl s${si + 1}" d="M${solid}"/>` : ""}${dashed}${dots}`, endY: pts.length ? Y(pts.at(-1)[1]) : null, name: s.name };
+  });
+  // Direct end labels only when they don't collide; otherwise the legend carries identity.
+  let labels = "";
+  if (direct) {
+    const ends = lines.map((l, i) => ({ y: l.endY, name: l.name, i })).filter((e) => e.y != null).sort((a, b) => a.y - b.y);
+    const ok = ends.every((e, k) => k === 0 || e.y - ends[k - 1].y >= 13);
+    if (ok) labels = ends.map((e) => `<text class="dl" x="${X(n - 1) + 10}" y="${e.y + 4}">${esc(e.name)}</text>`).join("");
+  }
+  const legend = series.length > 1 ? `<div class="legend">${series.map((s, i) => `<span><i class="lk s${i + 1}"></i>${esc(s.name)}</span>`).join("")}</div>` : "";
+  el.innerHTML = `${legend}<div class="chart"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(title)} by iteration">
+    ${grid.join("")}<line class="ax" x1="${m.l}" x2="${W - m.r}" y1="${H - m.b}" y2="${H - m.b}"/>${xl}
+    <text class="axl" x="${m.l}" y="${m.t - 2}">${esc(unit)}</text>
+    <line class="cross" y1="${m.t}" y2="${H - m.b}" visibility="hidden"/>
+    ${lines.map((l) => l.svg).join("")}${labels}
+    <rect class="hit${onPick ? " pick" : ""}" x="${m.l - 10}" y="${m.t}" width="${W - m.l - m.r + 20}" height="${H - m.t - m.b}" fill="transparent"/>
+  </svg><div class="tip trend-tip" hidden></div></div>`;
+  const svg = el.querySelector("svg"), hit = el.querySelector(".hit"), tip = el.querySelector(".tip"), cross = el.querySelector(".cross"), host = el.querySelector(".chart");
+  const nearest = (ev) => {
+    const pt = svg.createSVGPoint(); pt.x = ev.clientX; pt.y = ev.clientY;
+    const lx = pt.matrixTransform(svg.getScreenCTM().inverse()).x;
+    let i = 0; for (let k = 1; k < n; k++) if (Math.abs(X(k) - lx) < Math.abs(X(i) - lx)) i = k;
+    return i;
+  };
+  const move = (ev) => {
+    const i = nearest(ev), p = points[i];
+    cross.setAttribute("x1", X(i)); cross.setAttribute("x2", X(i)); cross.setAttribute("visibility", "visible");
+    tip.hidden = false;
+    tip.innerHTML = `<div class="tt-h">${esc(p.label)}${p.best ? " · best" : ""}${p.sub ? ` <span class="sub">${esc(p.sub)}</span>` : ""}</div>
+      ${series.map((s, si) => `<div class="tt-r"><i class="lk s${si + 1}"></i><b class="num">${Number.isFinite(p.values[si]) ? fmt(p.values[si], dec) : "—"}</b> <span class="sub">${esc(s.name)}</span></div>`).join("")}
+      ${p.changes && p.changes.length ? `<div class="tt-c">${p.changes.slice(0, 4).map(([k, , to]) => `<div>${esc(k)} → ${esc(to)}</div>`).join("")}${p.changes.length > 4 ? `<div>+${p.changes.length - 4} more</div>` : ""}</div>` : ""}${onPick && p.key ? `<div class="tt-c">Click for what changed and why</div>` : ""}`;
+    const r = svg.getBoundingClientRect(), hr = host.getBoundingClientRect();
+    const xpx = X(i) / W * r.width + (r.left - hr.left), right = xpx < hr.width / 2;
+    tip.style.left = (right ? xpx + 12 : xpx - 12) + "px";
+    tip.style.transform = right ? "none" : "translateX(-100%)";
+    tip.style.top = (m.t / H * r.height + 2) + "px";
+  };
+  hit.addEventListener("pointermove", move); hit.addEventListener("pointerdown", move);
+  if (onPick) hit.addEventListener("click", (ev) => { const p = points[nearest(ev)]; if (p.key) onPick(p.key); });
+  hit.addEventListener("pointerleave", () => { tip.hidden = true; cross.setAttribute("visibility", "hidden"); });
+}
+
+function renderProjects() {
+  const el = document.querySelector('[data-pane="projects"]'); if (!el) return;
+  const projects = S.projects;
+  if (!projects.length) {
+    el.innerHTML = `<div class="wb-head"><div><h1>Projects</h1><p>A project is one ski. Every time you save, the design becomes the next iteration (v1, v2, v3…), so you can chart how it changes and go back to any earlier version.</p></div></div>
+      <div class="card"><p class="empty" style="margin:0">No projects yet. Design a ski on the <a href="#design">Design</a> tab and press <b>Save v1</b>.</p></div>`;
+    return;
+  }
+  if (!projectById(S.pv.project)) S.pv.project = (currentProject() || projects[0]).id;
+  const p = projectById(S.pv.project), isCur = p.id === S.projectId;
+  const list = projects.map((q) => {
+    const b = bestIter(q), latest = q.iterations.at(-1);
+    return `<button class="pcard${q.id === p.id ? " sel" : ""}" data-pview="${esc(q.id)}">
+      <span class="pn">${esc(q.name)}${q.id === S.projectId ? ` <span class="chip Info">open</span>` : ""}</span>
+      <span class="pm">${q.iterations.length} iteration${q.iterations.length === 1 ? "" : "s"} · ${when(q.updatedAt)}</span>
+      <span class="pm">latest ${esc(latest.label)} <b class="num">${fmt(iterScore(q.id, latest), 1)}</b>${q.iterations.length > 1 ? ` · best ${esc(b.label)} <b class="num">${fmt(iterScore(q.id, b), 1)}</b>` : ""}</span>
+      ${sparkline(q)}</button>`;
+  }).join("");
+
+  const best = bestIter(p), latest = p.iterations.at(-1);
+  const r1 = (x) => Math.round(x * 10) / 10;
+  const callout = p.iterations.length > 1 && best.id !== latest.id && r1(iterScore(p.id, best)) > r1(iterScore(p.id, latest))
+    ? `<div class="notice" style="margin:0 0 12px">Your latest iteration (${esc(latest.label)}, ${fmt(iterScore(p.id, latest), 1)}) scores below your best (${esc(best.label)}, ${fmt(iterScore(p.id, best), 1)}). Both are kept. <button class="btn small" data-iopen="${esc(p.id + "|" + best.id)}">Open ${esc(best.label)}</button></div>` : "";
+
+  const groups = TREND_GROUPS().filter((g) => !(g.adv && settings.mode === "simple"));
+  const g = groups.find((x) => x.key === S.pv.group) || groups[0];
+  let iters = p.iterations;
+  if (S.pv.show === "top5") { const top = new Set([...iters].sort((a, b) => iterScore(p.id, b) - iterScore(p.id, a)).slice(0, 5).map((i) => i.id)); iters = iters.filter((i) => top.has(i.id)); }
+  if (S.pv.show === "starred") iters = iters.filter((i) => i.star);
+  const byId = Object.fromEntries(p.iterations.map((i) => [i.id, i]));
+  const points = iters.map((it) => {
+    const r = analyzeIter(p.id, it), prev = byId[it.basedOn] || p.iterations[p.iterations.indexOf(it) - 1];
+    return { key: p.id + "|" + it.id, label: it.label, sub: when(it.savedAt), best: best.id === it.id && p.iterations.length > 1, values: g.series.map(([, f]) => f(r)), changes: changesBetween(prev?.build, it.build) };
+  });
+  if (isCur && isDirty() && S.pv.show === "all") {
+    const cur = iterById(p, S.iterId);
+    points.push({ key: p.id + "|now", label: "now", sub: "unsaved", now: true, values: g.series.map(([, f]) => f(S.result)), changes: changesBetween(cur?.build || latest.build, S.build) });
+  }
+  // One dropdown per point on the chart: what changed from the version it came from, and why it scored higher or lower.
+  const whyItems = points.slice().reverse().map((pt) => {
+    const iid = pt.key.split("|")[1], it = pt.now ? null : byId[iid];
+    const prev = pt.now ? (iterById(p, S.iterId) || latest) : (byId[it.basedOn] || p.iterations[p.iterations.indexOf(it) - 1]);
+    const build = pt.now ? S.build : it.build, score = pt.now ? S.result.scores.overall : iterScore(p.id, it);
+    const label = pt.now ? "Now (unsaved)" : it.label;
+    if (!prev) return `<div class="why-it first"><div class="why-sum"><span class="wl">${esc(label)}</span><b class="num">${fmt(score, 1)}</b><span class="sub">first version, the starting point</span></div></div>`;
+    const dO = Math.round((score - iterScore(p.id, prev)) * 10) / 10, groups = changeGroups(normalizeBuild(prev.build), normalizeBuild(build)).map((c) => c.name);
+    const arrow = dO > 0 ? `▲ ${fmt(dO, 1)}` : dO < 0 ? `▼ ${fmt(-dO, 1)}` : "no change";
+    return `<details class="why-it" data-why="${esc(pt.key)}" data-prev="${esc(prev.id)}"${S.pv.whyOpen.has(pt.key) ? " open" : ""}>
+      <summary class="why-sum"><span class="wl">${esc(label)}</span><b class="num">${fmt(score, 1)}</b>${dspan(dO, arrow)}<span class="sub">vs ${esc(prev.label)} · ${groups.length ? esc(groups.join(", ")) + " changed" : "no design change"}</span>${pt.best ? `<span class="chip best-chip">best</span>` : ""}</summary>
+      <div class="why-body"></div></details>`;
+  }).join("");
+  const chips = groups.map((x) => `<button class="chipbtn" data-pgroup="${x.key}" aria-pressed="${x.key === g.key}">${esc(x.name)}</button>`).join("");
+  const showSel = `<label class="sub">Show <select class="sel" data-pshow style="width:auto;margin-left:4px">${[["all", "All iterations"], ["top5", "Top 5 by overall"], ["starred", "Kept (★) only"]].map(([k, n]) => `<option value="${k}"${S.pv.show === k ? " selected" : ""}>${n}</option>`).join("")}</select></label>`;
+
+  const order = { old: (a, b) => a.n - b.n, new: (a, b) => b.n - a.n, best: (a, b) => iterScore(p.id, b) - iterScore(p.id, a) };
+  const rows = p.iterations.slice().sort(order[S.pv.sort] || order.old).map((it) => {
+    const r = analyzeIter(p.id, it), key = p.id + "|" + it.id, prev = byId[it.basedOn] || p.iterations[p.iterations.indexOf(it) - 1];
+    const ch = changesBetween(prev?.build, it.build), mats = Object.fromEntries(materialsOf(normalizeBuild(it.build)));
+    const open = isCur && S.iterId === it.id;
+    return `<tr class="${best.id === it.id && p.iterations.length > 1 ? "bestrow" : ""}">
+      <td><button class="star${it.star ? " on" : ""}" data-istar="${esc(key)}" aria-pressed="${!!it.star}" title="${it.star ? "Kept" : "Keep this one"}">${it.star ? "★" : "☆"}</button></td>
+      <td><input class="in lbl-in" data-ilabel="${esc(key)}" value="${esc(it.label)}" maxlength="40" aria-label="Iteration name">
+        <input class="in note-in" data-inote="${esc(key)}" value="${esc(it.note || "")}" maxlength="200" placeholder="note" aria-label="Note">
+        <div class="sub">${when(it.savedAt)}${it.basedOn && byId[it.basedOn] && byId[it.basedOn] !== p.iterations[p.iterations.indexOf(it) - 1] ? ` · from ${esc(byId[it.basedOn].label)}` : ""}${best.id === it.id && p.iterations.length > 1 ? ` · <b class="bestword">best</b>` : ""}</div></td>
+      <td class="wrap small"><div>${esc(mats.Core)}</div><div>${esc(mats.Fiberglass)}</div><div>Metal: ${esc(mats.Metal)}</div></td>
+      <td class="wrap small">${ch.length ? ch.map(([k, , to]) => `<div><b>${esc(k)}</b> → ${esc(to)}</div>`).join("") : it === p.iterations[0] ? "First version" : "No material change"}</td>
+      <td class="num"><b>${fmt(r.scores.overall, 1)}</b></td><td class="num">${fmt(r.scores.performance, 1)}</td><td class="num">${fmt(r.scores.buildQuality, 1)}</td>
+      <td class="num">${U.fmt("massG", r.weightG)}</td><td class="num">$${fmt(r.costUSD)}</td>
+      <td class="acts"><label class="cmp"><input type="checkbox" data-cmp="${esc(key)}" ${S.compare.has(key) ? "checked" : ""}> compare</label>
+        ${open ? `<span class="chip Info">open</span>` : `<button class="btn small" data-iopen="${esc(key)}">Open</button>`}
+        ${p.iterations.length > 1 ? `<button class="btn small ghost danger" data-idel="${esc(key)}">${S.pv.confirmDel === key ? "Confirm" : "Delete"}</button>` : ""}</td></tr>`;
+  }).join("");
+
+  el.innerHTML = `<div class="wb-head"><div><h1>Projects</h1><p>A project is one ski. Every save adds the next iteration, so earlier versions stay in your projects even when a newer one scores lower. Chart any stat across iterations and open any version again.</p></div>
+      <div class="wb-actions"><button class="btn" data-pnew>+ New project</button></div></div>
+    <div class="proj-layout">
+      <div class="proj-list">${list}</div>
+      <div class="proj-detail">
+        <div class="card"><div class="proj-title"><input class="in pname" data-pname="${esc(p.id)}" value="${esc(p.name)}" maxlength="80" aria-label="Project name">
+          <div class="wb-actions">${isCur && S.iterId === latest.id ? "" : `<button class="btn small" data-iopen="${esc(p.id + "|" + latest.id)}">Open latest (${esc(latest.label)})</button>`}
+          ${p.iterations.length > 1 && best.id !== latest.id ? `<button class="btn small" data-iopen="${esc(p.id + "|" + best.id)}">Open best (${esc(best.label)})</button>` : ""}
+          <button class="btn small ghost danger" data-pdel="${esc(p.id)}">${S.pv.confirmDel === "p:" + p.id ? "Delete project and all iterations?" : "Delete project"}</button></div></div>
+          <p class="sub2" style="margin-top:4px">${p.iterations.length} iteration${p.iterations.length === 1 ? "" : "s"} · started ${when(p.createdAt)} · last saved ${when(p.updatedAt)}</p></div>
+        ${callout}
+        <div class="card"><header><h2>${esc(g.name)} by iteration</h2>${showSel}</header>
+          <div class="chips" style="margin-bottom:10px">${chips}</div>
+          ${points.length ? `<div id="trend"></div>` : `<p class="empty">No iterations to show with this filter.</p>`}
+          <p class="why" style="margin:6px 0 0">${p.iterations.length < 2 ? "Save more iterations to see a trend. " : ""}Hover a point for its values; click it to open what changed and why below.${isCur && isDirty() ? " The dashed point is your unsaved design." : ""} ★ marks the best overall score.</p>
+          ${points.length ? `<div class="whylist"><h3>What changed and why <span class="sub">newest first · each compared with the version it came from</span></h3>${whyItems}</div>` : ""}</div>
+        <div class="card"><header><h2>Iterations</h2><label class="sub">Sort <select class="sel" data-psort style="width:auto;margin-left:4px">${[["old", "Oldest first"], ["new", "Newest first"], ["best", "Best first"]].map(([k, n]) => `<option value="${k}"${S.pv.sort === k ? " selected" : ""}>${n}</option>`).join("")}</select></label></header>
+          <div class="tbl-wrap"><table class="data iters"><thead><tr><th></th><th>Iteration</th><th>Materials</th><th>What changed</th><th>Overall</th><th>Perf.</th><th>Quality</th><th>Weight</th><th>Cost</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>
+          <p class="why" style="margin:8px 0 0">★ keeps an iteration in the "Kept" view. Tick compare to see iterations side by side on the Design tab.</p></div>
+      </div>
+    </div>`;
+  if (points.length) trendChart($("#trend"), { points, series: g.series.map(([name]) => ({ name })), unit: g.unit, dec: g.dec, clamp: g.clamp, title: g.name, onPick: openWhy });
+  for (const d of el.querySelectorAll("details.why-it[open]")) fillWhy(d);
+}
+function fillWhy(d) {
+  const body = d.querySelector(".why-body"); if (!body || body.dataset.filled) return;
+  const [pid, iid] = d.dataset.why.split("|"), p = projectById(pid); if (!p) return;
+  const prev = iterById(p, d.dataset.prev), build = iid === "now" ? S.build : iterById(p, iid)?.build; if (!prev || !build) return;
+  const g = TREND_GROUPS().find((x) => x.key === S.pv.group) || TREND_GROUPS()[0];
+  body.innerHTML = whyBody(explainIter(prev.build, build), g, prev.label);
+  body.dataset.filled = "1";
+}
+function openWhy(key) {
+  const d = document.querySelector(`details.why-it[data-why="${CSS.escape(key)}"]`);
+  if (!d) return;
+  d.open = true; S.pv.whyOpen.add(key); fillWhy(d);
+  d.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  d.classList.remove("flash"); void d.offsetWidth; d.classList.add("flash");
+}
+document.addEventListener("toggle", (e) => {
+  const d = e.target; if (!(d instanceof HTMLDetailsElement) || !d.classList.contains("why-it")) return;
+  if (d.open) { S.pv.whyOpen.add(d.dataset.why); fillWhy(d); } else S.pv.whyOpen.delete(d.dataset.why);
+}, true);
+async function updateIter(key, patch) {
+  const [pid, iid] = key.split("|"), p = projectById(pid); if (!p) return;
+  const q = clone(p); const it = q.iterations.find((i) => i.id === iid); if (!it) return;
+  Object.assign(it, patch);
+  await writeProject(q);
+}
+document.addEventListener("click", async (e) => {
+  if (!e.target.closest('[data-pane="projects"]')) return;
+  const t = e.target.closest("[data-pview],[data-pgroup],[data-istar],[data-idel],[data-pdel],[data-pnew]");
+  if (!t) return;
+  if (t.dataset.pview) { S.pv.project = t.dataset.pview; S.pv.confirmDel = null; return renderProjects(); }
+  if (t.dataset.pgroup) { S.pv.group = t.dataset.pgroup; return renderProjects(); }
+  if (t.dataset.istar) { const [pid, iid] = t.dataset.istar.split("|"); const it = iterById(projectById(pid), iid); return updateIter(t.dataset.istar, { star: !it?.star }); }
+  if (t.hasAttribute("data-pnew")) { startNewProject(E.BLANK_BUILD); location.hash = "design"; return; }
+  if (t.dataset.idel) {
+    const key = t.dataset.idel;
+    if (S.pv.confirmDel !== key) { S.pv.confirmDel = key; renderProjects(); setTimeout(() => { if (S.pv.confirmDel === key) { S.pv.confirmDel = null; renderProjects(); } }, 4000); return; }
+    S.pv.confirmDel = null;
+    const [pid, iid] = key.split("|"), p = projectById(pid); if (!p || p.iterations.length < 2) return;
+    S.compare.delete(key);
+    await writeProject({ ...clone(p), iterations: clone(p.iterations.filter((i) => i.id !== iid)) });
+    if (S.projectId === pid && S.iterId === iid) { S.iterId = null; S.savedSnap = null; updateState(); saveWorking(); }
+    return;
+  }
+  if (t.dataset.pdel) {
+    const id = t.dataset.pdel;
+    if (S.pv.confirmDel !== "p:" + id) { S.pv.confirmDel = "p:" + id; renderProjects(); setTimeout(() => { if (S.pv.confirmDel === "p:" + id) { S.pv.confirmDel = null; renderProjects(); } }, 4000); return; }
+    S.pv.confirmDel = null;
+    for (const k of [...S.compare]) if (k.startsWith(id + "|")) S.compare.delete(k);
+    try { await S.store.del(id); } catch { notice("Couldn't delete that project."); }
+    if (S.projectId === id) { S.projectId = null; S.iterId = null; S.savedSnap = null; updateState(); saveWorking(); }
+    S.pv.project = null;
+  }
+});
+document.addEventListener("change", (e) => {
+  const el = e.target;
+  if (!el.closest('[data-pane="projects"]')) return;
+  if (el.hasAttribute("data-pshow")) { S.pv.show = el.value; return renderProjects(); }
+  if (el.hasAttribute("data-psort")) { S.pv.sort = el.value; return renderProjects(); }
+  if (el.dataset.ilabel) { const v = el.value.trim().slice(0, 40); if (v) updateIter(el.dataset.ilabel, { label: v }); return; }
+  if (el.dataset.inote != null && el.hasAttribute("data-inote")) return updateIter(el.dataset.inote, { note: el.value.trim().slice(0, 200) });
+  if (el.dataset.pname) {
+    const p = projectById(el.dataset.pname), nm = el.value.trim().slice(0, 80);
+    if (!p || !nm || nm === p.name) return;
+    writeProject({ ...clone(p), name: nm });
+    if (S.projectId === p.id) { S.build.name = nm; $("#buildName").value = nm; saveWorking(); }
+  }
+});
+const renderProjectsIfOpen = () => { if (document.documentElement.dataset.tab === "projects") renderProjects(); };
+let projResize = 0;
+window.addEventListener("resize", () => { clearTimeout(projResize); projResize = setTimeout(renderProjectsIfOpen, 150); });
+
+// ---- compare
+function renderCompare() {
+  if (!S.result) return;
+  const cp = currentProject(), curIt = iterById(cp, S.iterId);
+  const cols = [{ name: (cp ? cp.name + " · " : "") + (curIt ? curIt.label + (isDirty() ? " + changes" : "") : "this design"), r: S.result, live: true }];
+  for (const key of S.compare) {
+    const [pid, iid] = key.split("|"), p = projectById(pid), it = iterById(p, iid);
+    if (!it || (pid === S.projectId && iid === S.iterId && !isDirty())) continue;
+    cols.push({ name: `${p.name} · ${it.label}`, r: analyzeIter(pid, it) });
+  }
+  for (const x of REF) if (S.refCompare.has(x.id)) cols.push({ name: x.build.name, r: x.result, ref: true });
+  const el = $("#compareView");
+  if (cols.length < 2) { el.innerHTML = `<div class="empty">Tick iterations (here or on the Projects tab) or production skis to see them side by side with this design.</div>`; return; }
+  const us = S.units === "us", A = (row) => Object.assign(row, { adv: true });
+  const rows = [
+    ["Scores"],
+    ["Overall", (r) => r.scores.overall, 1, "max"], ["Performance", (r) => r.scores.performance, 1, "max"], ["Build quality", (r) => r.scores.buildQuality, 1, "max"],
+    [settings.mode === "simple" ? "Basics" : "Physics"],
+    [`Weight (${U.unit("massG")})`, (r) => U.val("massG", r.weightG), us ? 2 : 0, "min"], [`Weight at ${U.fmt("lenCm", 177)} (${U.unit("massG")})`, (r) => U.val("massG", r.weight177), us ? 2 : 0, "min"],
+    [`Sidecut radius (${U.unit("lenM")})`, (r) => U.val("lenM", r.geometry.sidecutR), 1],
+    ["Materials, est. ($)", (r) => r.costUSD ?? "—", 0, "min"],
+    A([`Underfoot EI (${U.unit("stiffNm2")})`, (r) => U.val("stiffNm2", r.zones.EI.underfoot), 0]), A([`Forebody EI (${U.unit("stiffNm2")})`, (r) => U.val("stiffNm2", r.zones.EI.forebody), 0]), A([`Forebody GJ (${U.unit("stiffNm2")})`, (r) => U.val("stiffNm2", r.zones.GJ.forebody), 0, "max"]),
+    A([`Center flex (${U.unit("rateNmm")})`, (r) => U.val("rateNmm", r.flexRate), 1]), A([`Carve energy (${U.unit("energyJ")})`, (r) => U.val("energyJ", r.turnEnergyJ), 2, "max"]), A(["First mode (Hz)", (r) => r.f1, 1]), A(["Loss factor", (r) => r.eta, 4, "max"]),
+    A([`Stack above base (${U.unit("thickMm")})`, (r) => U.val("thickMm", r.aboveBaseMm), us ? 3 : 1]),
+    ["Attributes (1–5)"], ...E.ATTRS.map((a) => [a.name, (r) => r.attributes[a.key], 1, "max"]),
+    ["Use-case fit (0–10)"], ...E.USE_CASES.map((u, i) => [u.name, (r) => r.fits[i].fit, 1, "max"]),
+    ["Issues"], ["High / Medium", (r) => r.issues.filter((i) => i.severity === "High").length + " / " + r.issues.filter((i) => i.severity === "Medium").length],
+  ];
+  const head = `<thead><tr><th></th>${cols.map((c) => `<th style="${c.ref ? "color:var(--ref)" : c.live ? "color:var(--accent)" : ""}">${esc(c.name)}</th>`).join("")}</tr></thead>`;
+  const body = rows.filter((row) => !(settings.mode === "simple" && row.adv)).map((row) => {
+    if (row.length === 1) return `<tr class="sect"><td colspan="${cols.length + 1}">${row[0]}</td></tr>`;
+    const [label, f, d, best] = row;
+    const vals = cols.map((c) => f(c.r));
+    const nums = vals.filter((v) => typeof v === "number");
+    const target = best === "max" ? Math.max(...nums) : best === "min" ? Math.min(...nums) : null;
+    return `<tr><td>${label}</td>${vals.map((v) => `<td class="num${best && v === target && nums.length > 1 ? " best" : ""}">${typeof v === "number" ? fmt(v, d) : esc(v)}</td>`).join("")}</tr>`;
+  }).join("");
+  el.innerHTML = `<table class="data">${head}<tbody>${body}</tbody></table><p class="why" style="margin:8px 0 0">Best value in each row is highlighted where higher or lower is clearly better.</p>`;
+}
+
+// ------------------------------------------------------------------ new blank build
+let newArmed = 0;
+$("#newBtn").addEventListener("click", () => {
+  const btn = $("#newBtn");
+  if (S.projectId ? isDirty() : snap(S.build) !== snap(normalizeBuild(E.BLANK_BUILD))) {
+    if (!newArmed) {
+      btn.textContent = "Discard changes?"; btn.classList.add("danger");
+      newArmed = setTimeout(() => { newArmed = 0; btn.textContent = "+ New project"; btn.classList.remove("danger"); }, 4000);
+      return;
+    }
+  }
+  clearTimeout(newArmed); newArmed = 0; btn.textContent = "+ New project"; btn.classList.remove("danger");
+  S.opt.result = null;
+  startNewProject(E.BLANK_BUILD);
+  window.scrollTo({ top: 0, behavior: "smooth" });
+  $("#buildName").focus(); $("#buildName").select();
+});
+
+// ------------------------------------------------------------------ presets, json, notice
+const PRESETS = [
+  ["blank", "Blank slate", () => E.BLANK_BUILD],
+  ["draft", "First draft (from your sheet)", () => E.SHEET_DRAFT],
+  ["base", "Classic DIY all-mountain", () => ({ ...E.BASE_BUILD, name: "Classic DIY all-mountain" })],
+  ...REF.map((x) => ["ref:" + x.id, "Layup like " + x.build.name, () => ({ ...clone(x.build), press: "pneumatic-cold", name: "My " + x.build.name.replace(/ \(\d+\)$/, "") + "-style build" })]),
+];
+$("#startFrom").innerHTML = `<option value="">Start from…</option>` + PRESETS.map(([k, n]) => `<option value="${k}">${esc(n)}</option>`).join("");
+$("#startFrom").addEventListener("change", (e) => {
+  const p = PRESETS.find(([k]) => k === e.target.value);
+  e.target.value = "";
+  if (!p) return;
+  loadBuild(clone(p[2]()), null);
+});
+$("#jsonCopy").addEventListener("click", async () => {
+  const t = $("#jsonText");
+  try { await navigator.clipboard.writeText(t.value); $("#jsonMsg").textContent = "Copied."; }
+  catch { t.focus(); t.select(); $("#jsonMsg").textContent = "Selected — press Ctrl/⌘+C to copy."; }
+});
+$("#jsonApply").addEventListener("click", () => {
+  try {
+    const b = JSON.parse($("#jsonText").value);
+    if (!isObj(b) || !b.core) throw new Error("not a build");
+    const test = normalizeBuild(b); E.analyze(test);
+    loadBuild(test, null); $("#jsonMsg").textContent = "Loaded as a new, unsaved build.";
+  } catch (err) { $("#jsonMsg").textContent = "That isn't a valid build file (" + (err.message || "parse error") + ")."; }
+});
+$("#notice").addEventListener("click", async (e) => {
+  const b = e.target.closest("[data-act]"); if (!b) return;
+  if (b.dataset.act === "dismiss") $("#notice").hidden = true;
+  if (b.dataset.act === "migrate") {
+    const local = lsGet("skiLayupLab.builds.v1") || {};
+    b.disabled = true;
+    try {
+      for (const [id, d] of Object.entries(local)) await writeSave(id, d);
+      lsSet("skiLayupLab.builds.v1", {});
+      // On the site, a guest's planning-sheet picks move in too (unless the account already has some).
+      const wb = API ? lsGet(WB_KEY) : null;
+      if (wb) {
+        const kv = apiKV(API);
+        if (!(await kv.load().catch(() => null))) await kv.save(wb);
+        try { localStorage.removeItem(WB_KEY); } catch { /* fine */ }
+        await WB.setKV(kv);
+      }
+      $("#notice").hidden = true;
+      notice("Moved into your account. You'll see them on any device you sign in on.");
+    } catch {
+      b.disabled = false;
+      notice("Couldn't move everything just now. Try again in a moment.", ` <button class="btn small primary" data-act="migrate">Try again</button>`);
+    }
+  }
+});
+$("#refSources").innerHTML = REF.map((x) => `<a href="${esc(x.source)}" target="_blank" rel="noopener">${esc(x.build.name.replace(/ \(\d+\)$/, ""))}</a>`).join(", ");
+$("#engineVer").textContent = E.ENGINE_VERSION;
+
+function renderUnitToggle() {
+  for (const b of document.querySelectorAll("#unitSeg button")) b.setAttribute("aria-pressed", String(b.dataset.units === S.units));
+}
+$("#unitSeg").addEventListener("click", (e) => {
+  const b = e.target.closest("[data-units]"); if (!b || b.dataset.units === S.units) return;
+  S.units = b.dataset.units; U = E.makeUnits(S.units); lsSet(UNITS_KEY, S.units);
+  renderUnitToggle(); renderInputs(); renderOptControls();
+  S.result = analyzeCurrent(); S.analysisCache.clear(); renderResults(); updateState(); renderProjectsIfOpen();
+});
+
+
+
+// ------------------------------------------------------------------ materials
+const money = (x) => "$" + fmt(x, x >= 100 ? 0 : 2);
+function renderBOM() {
+  const m = E.billOfMaterials(S.build, { units: S.units });
+  let group = "";
+  const rows = m.items.map((i) => {
+    const head = i.group !== group ? `<tr class="sect"><td colspan="5">${esc(i.group)}</td></tr>` : "";
+    group = i.group;
+    return head + `<tr><td class="item">${esc(i.item)}</td><td class="spec">${esc(i.spec)}${i.note ? `<br>${esc(i.note)}` : ""}</td><td class="num">${esc(i.qty)}</td>
+      <td class="num">${i.cost > 0 ? money(i.cost) + (i.est ? '<span class="est">est.</span>' : "") : "—"}</td><td class="buy"><a href="${esc(i.buy)}" target="_blank" rel="noopener">Amazon ↗</a></td></tr>`;
+  }).join("");
+  $("#bomView").innerHTML = `<div class="bom-head"><span><span class="bom-total">${money(m.total)}</span> <span class="sub">about ${money(m.perSki)} per ski</span></span>
+      <button class="btn small" id="bomCopy">Copy shopping list</button></div>
+    <div class="tbl-wrap"><table class="data bom"><thead><tr><th>Item</th><th>What to get</th><th>Amount</th><th>Cost</th><th>Buy</th></tr></thead>
+    <tbody>${rows}<tr class="total"><td>Total</td><td></td><td></td><td class="num">${money(m.total)}</td><td></td></tr></tbody></table></div>
+    <p class="why" style="margin:8px 0 0">${esc(m.note)} Prices without "est." are list prices from your planning sheet (Fiberglass Supply, Resin Research). Fabric amounts assume 50" rolls with several strips cut side by side; a lumberyard is usually cheaper than Amazon for the wood.</p>`;
+}
+$("#bomView").addEventListener("click", async (e) => {
+  if (!e.target.closest("#bomCopy")) return;
+  const m = E.billOfMaterials(S.build, { units: S.units });
+  const text = `${S.build.name || "Ski build"}: materials for one pair\n` + m.items.map((i) => `- ${i.item} (${i.spec}): ${i.qty}${i.cost > 0 ? `, ~${money(i.cost)}` : ""}`).join("\n") + `\nTotal ~${money(m.total)}`;
+  try { await navigator.clipboard.writeText(text); e.target.textContent = "Copied"; setTimeout(() => { e.target.textContent = "Copy shopping list"; }, 1500); }
+  catch { notice("Couldn't copy here. Select the table and copy it instead."); }
+});
+
+// ------------------------------------------------------------------ optimizer
+const API = (window.SKI_LAB_CONFIG && window.SKI_LAB_CONFIG.api) || null;
+const LOCK_NAMES = { core: "core wood", thickness: "core thickness", laminate: "fiberglass", metal: "metal", sidewall: "sides" };
+S.opt = { result: null, forBuild: null, running: false, lock: new Set(), goal: "performance", maxW: null };
+function renderOptControls() {
+  $("#optGoal").innerHTML = E.OPT_GOALS.map((g) => `<option value="${g.key}"${g.key === S.opt.goal ? " selected" : ""}>${esc(g.name)}</option>`).join("");
+  const unit = U.unit("massG"), shown = S.opt.maxW == null ? "" : +U.val("massG", S.opt.maxW).toFixed(S.units === "us" ? 2 : 0);
+  $("#optMaxWrap").innerHTML = `<input class="in" id="optMax" type="number" inputmode="decimal" placeholder="no limit" value="${shown}" step="${S.units === "us" ? 0.05 : 10}" style="width:110px"> <span class="hint">${unit} at ${U.fmt("lenCm", 177)}</span>`;
+  $("#optLocks").innerHTML = Object.entries(LOCK_NAMES).map(([k, n]) => `<label><input type="checkbox" data-lock="${k}" ${S.opt.lock.has(k) ? "checked" : ""}> ${n}</label>`).join("");
+}
+function renderOpt() {
+  const out = $("#optOut"), res = S.opt.result;
+  if (S.opt.running) { out.innerHTML = `<p class="sub" style="margin:12px 0 0">${API ? "Checking every combination on the server (a few seconds)…" : "Searching layups…"}</p>`; return; }
+  if (!res) { out.innerHTML = `<p class="sub" style="margin:12px 0 0">The search keeps your shape and tries hundreds of layups, scoring each on your goal and on build quality, so suggestions avoid warping, weak screws and other problems.</p>`; return; }
+  const stale = S.opt.forBuild !== JSON.stringify(S.build);
+  const goalName = (E.OPT_GOALS.find((g) => g.key === res.goal) || {}).name || res.goal;
+  const b = res.baseline;
+  const line = (c) => `${goalName}: <b class="num">${fmt(c.goalScore, 1)}</b>/10 · build quality <b class="num">${fmt(c.scores.buildQuality, 1)}</b> · ${U.fmt("massG", c.weightG)}`;
+  const cards = res.candidates.map((c, i) => {
+    const better = c.score > b.score + 0.005;
+    return `<div class="cand"><div class="ch"><b>Option ${i + 1}</b><span class="meta">${line(c)}${better ? ` · <span class="up">+${fmt(c.score - b.score, 2)}</span>` : ""}</span></div>
+      ${c.changes.length ? `<ul>${c.changes.map((x) => `<li><span class="from">${esc(x.from)}</span> → ${esc(x.to)}</li>`).join("")}</ul>` : `<p class="meta" style="margin:6px 0 0">Your current layup is already the best the search found for this goal.</p>`}
+      ${c.issues.length ? `<p class="meta" style="margin:6px 0 0">Still flagged: ${esc(c.issues.join("; "))}</p>` : ""}
+      ${c.changes.length ? `<button class="btn small" data-apply="${i}" style="margin-top:8px">Apply option ${i + 1}</button>` : ""}</div>`;
+  }).join("");
+  out.innerHTML = `<div class="cands"><div class="cand base"><div class="ch"><b>Your build now</b><span class="meta">${line(b)}</span></div></div>${cards}</div>
+    <p class="why" style="margin:8px 0 0">${fmt(res.evaluated)} layups checked${res.thorough ? " (every combination, on the server)" : ""}. Score = 70% goal + 30% build quality${res.maxWeight177 ? `, with a penalty above ${U.fmt("massG", res.maxWeight177)} at ${U.fmt("lenCm", 177)}` : ""}.${stale ? " <b>Your build has changed since this search; run it again for fresh suggestions.</b>" : ""}</p>`;
+}
+async function runOptimizer() {
+  if (S.opt.running) return;
+  const req = { build: clone(S.build), goal: S.opt.goal, lock: [...S.opt.lock], maxWeight177: S.opt.maxW ?? undefined, units: S.units, thorough: !!API };
+  S.opt.running = true; renderOpt(); $("#optRun").disabled = true;
+  try {
+    if (API) {
+      const r = await fetch(API + "/optimize", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(req) });
+      if (r.status === 401) { location.href = "/login?next=/lab"; return; }
+      if (!r.ok) throw new Error((await r.json().catch(() => ({}))).error || "server " + r.status);
+      S.opt.result = await r.json();
+    } else {
+      await new Promise((r) => setTimeout(r, 30));
+      S.opt.result = E.optimize(req.build, req);
+    }
+    S.opt.forBuild = JSON.stringify(S.build);
+  } catch (err) { S.opt.result = null; notice("The optimizer couldn't finish (" + esc(err.message || "error") + ")."); }
+  S.opt.running = false; $("#optRun").disabled = false; renderOpt();
+}
+$("#optRun").addEventListener("click", runOptimizer);
+$("#optCard").addEventListener("change", (e) => {
+  if (e.target.id === "optGoal") S.opt.goal = e.target.value;
+  if (e.target.dataset.lock) { if (e.target.checked) S.opt.lock.add(e.target.dataset.lock); else S.opt.lock.delete(e.target.dataset.lock); }
+  if (e.target.id === "optMax") { const v = parseFloat(e.target.value); S.opt.maxW = Number.isFinite(v) && v > 0 ? v / U.val("massG", 1) : null; }
+});
+$("#optOut").addEventListener("click", (e) => {
+  const b = e.target.closest("[data-apply]"); if (!b || !S.opt.result) return;
+  const c = S.opt.result.candidates[+b.dataset.apply]; if (!c) return;
+  S.build = normalizeBuild({ ...clone(c.build), name: S.build.name });
+  renderInputs(); schedule();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+});
+
+// ------------------------------------------------------------------ account (standalone site)
+const ACCOUNT = (window.SKI_LAB_CONFIG && window.SKI_LAB_CONFIG.user) || null;
+const GUEST = !!(window.SKI_LAB_CONFIG && window.SKI_LAB_CONFIG.guest);
+if (ACCOUNT) { $("#acct").hidden = false; $("#acctEmail").textContent = ACCOUNT.email; }
+if (GUEST) $("#guestAcct").hidden = false;
+$("#logoutBtn").addEventListener("click", async () => {
+  try { await fetch(API + "/auth/logout", { method: "POST" }); } catch { /* sign-in page still loads */ }
+  location.href = "/login";
+});
+
+// ------------------------------------------------------------------ settings
+function applySettings() {
+  const root = document.documentElement;
+  root.dataset.mode = settings.mode;
+  if (settings.theme === "light" || settings.theme === "dark") root.dataset.theme = settings.theme; else delete root.dataset.theme;
+  for (const r of document.querySelectorAll('input[name="viewMode"]')) r.checked = r.value === settings.mode;
+  for (const b of document.querySelectorAll("#themeSeg button")) b.setAttribute("aria-pressed", String(b.dataset.themeSet === settings.theme));
+  $("#modePill").textContent = settings.mode === "simple" ? "Simple" : "Detailed";
+}
+const saveSettings = () => lsSet(SET_KEY, settings);
+function openSettings(open) {
+  $("#settings").hidden = !open;
+  $("#settingsBtn").setAttribute("aria-expanded", String(open));
+  if (open) document.querySelector('input[name="viewMode"]:checked')?.focus();
+}
+$("#settingsBtn").addEventListener("click", (e) => { e.stopPropagation(); openSettings($("#settings").hidden); });
+$("#settingsClose").addEventListener("click", () => { openSettings(false); $("#settingsBtn").focus(); });
+document.addEventListener("click", (e) => { if (!$("#settings").hidden && !e.target.closest("#settings") && !e.target.closest("#settingsBtn")) openSettings(false); });
+document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !$("#settings").hidden) { openSettings(false); $("#settingsBtn").focus(); } });
+$("#settings").addEventListener("change", (e) => {
+  if (e.target.name !== "viewMode") return;
+  settings.mode = e.target.value === "simple" ? "simple" : "detailed"; saveSettings(); applySettings();
+  renderInputs(); renderResults();
+});
+$("#themeSeg").addEventListener("click", (e) => {
+  const b = e.target.closest("[data-theme-set]"); if (!b) return;
+  settings.theme = b.dataset.themeSet; saveSettings(); applySettings();
+});
+
+// ------------------------------------------------------------------ the planning sheet (other tabs)
+const WB_KEY = "skiLayupLab.workbook.v1";
+const localKV = { load: async () => lsGet(WB_KEY), save: async (v) => { lsSet(WB_KEY, v); } };
+function cloudKV(db, uid) {
+  const ref = db.doc(`data/users/${uid}/meta/settings/workbook`);
+  return { load: async () => { const snap = await ref.get(); return snap.exists ? clone(snap.data()) : null; }, save: (v) => ref.set(clone(v)) };
+}
+function apiKV(base) {
+  return {
+    load: async () => { const r = await fetch(base + "/workbook"); if (r.status === 401) { location.href = "/login?next=/lab"; return null; } if (!r.ok) throw { code: "HTTP " + r.status }; return (await r.json()).workbook || null; },
+    save: async (v) => { const r = await fetch(base + "/workbook", { method: "PUT", headers: { "content-type": "application/json" }, body: JSON.stringify({ workbook: v }) }); if (!r.ok) throw { code: "HTTP " + r.status }; },
+  };
+}
+const WB = initWorkbook({
+  $, esc, notice,
+  getBuild: () => S.build,
+  applyDesign: (b) => loadBuild(b, null),
+  renderProjects: () => renderProjects(),
+  patchDesign: (patch) => { Object.assign(S.build, clone(patch)); renderInputs(); schedule(); },
+  getResult: () => S.result,
+  analyze: (b) => Object.assign(E.analyze(normalizeBuild(b), { units: S.units }), { costUSD: E.billOfMaterials(normalizeBuild(b)).total }),
+  fmtMass: (g) => U.fmt("massG", g),
+  fmtLen: (m) => U.fmt("lenM", m),
+});
+new ResizeObserver(() => document.documentElement.style.setProperty("--hdr", $(".top").offsetHeight + "px")).observe($(".top"));
+
+// ------------------------------------------------------------------ boot
+const work = lsGet(WORK_KEY);
+if (work && work.build) {
+  S.build = normalizeBuild(work.build);
+  S.projectId = work.projectId || work.savedId || null;      // savedId: drafts from before projects
+  S.iterId = work.iterId || (work.savedId ? "i1" : null);
+  let old = null; try { old = work.savedSnap ? JSON.parse(work.savedSnap) : null; } catch { old = null; }
+  S.savedSnap = old ? snap(old) : null;
+}
+else S.build = normalizeBuild(E.SHEET_DRAFT);
+applySettings();
+renderOptControls();
+renderInputs();
+S.result = analyzeCurrent();
+renderUnitToggle();
+useStore(API ? makeApiStore(API) : makeLocalStore());
+WB.setKV(API ? apiKV(API) : localKV);
+renderResults(); updateState();
+if (GUEST) notice("You're trying Layup Lab as a guest. Projects save in this browser only.", ` <a class="btn small primary" href="/login?next=/lab">Create a free account</a>`);
+if (API) {
+  // Projects or picks made as a guest in this browser can move into the account.
+  const n = Object.keys(lsGet("skiLayupLab.builds.v1") || {}).length, wb = lsGet(WB_KEY);
+  if (n || wb) notice(`${n ? `${n} project${n === 1 ? "" : "s"}` : "Your planning-sheet picks"} from guest mode ${n === 1 ? "is" : "are"} saved only in this browser.`, ` <button class="btn small primary" data-act="migrate">Move to my account</button>`);
+}
+
+(async () => {
+  if (API || typeof window.claude?.use !== "function") return;
+  try {
+    const [db, user] = await Promise.all([window.claude.use("db"), window.claude.use("user")]);
+    if (!db || !user) return;
+    const uid = await user.id();
+    if (!uid) return;
+    const localCount = Object.keys(lsGet("skiLayupLab.builds.v1") || {}).length;
+    useStore(makeCloudStore(db, uid));
+    WB.setKV(cloudKV(db, uid));
+    if (localCount) notice(`${localCount} build${localCount === 1 ? " is" : "s are"} saved only in this browser.`, ` <button class="btn small primary" data-act="migrate">Move to my account</button>`);
+  } catch { /* stay on browser storage */ }
+})();
+</script>
