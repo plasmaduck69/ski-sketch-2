@@ -302,7 +302,6 @@ table.mix select { min-width: 160px; }
 .acct b { font-weight: 600; word-break: break-all; }
 .set-group[hidden] { display: none; }
 .setbtn { display: inline-flex; align-items: center; gap: 6px; }
-.setbtn .pillm { font-size: 11px; font-weight: 600; padding: 1px 7px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); }
 .settings { position: fixed; z-index: 40; top: calc(var(--hdr, 64px) + 4px); right: var(--gutter-r); width: min(380px, calc(100vw - 32px)); background: var(--panel); border: 1px solid var(--line); border-radius: 12px;
   box-shadow: 0 12px 40px rgba(10, 20, 25, .18); padding: 14px 16px 16px; }
 .settings[hidden] { display: none; }
@@ -310,52 +309,6 @@ table.mix select { min-width: 160px; }
 .set-h { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
 .set-group { margin-top: 14px; }
 .set-group h3 { margin-bottom: 8px; }
-.opt-card { display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: start; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; cursor: pointer; }
-.opt-card + .opt-card { margin-top: 8px; }
-.opt-card:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); }
-.opt-card input { margin-top: 3px; accent-color: var(--accent); }
-.opt-card b { display: block; }
-.opt-card small { color: var(--muted); font-size: 12px; }
-:root[data-mode="simple"] .adv { display: none !important; }
-:root:not([data-mode="simple"]) .simple-only { display: none !important; }
-
-/* simple mode */
-.sfield + .sfield { margin-top: 14px; }
-.slabel { display: flex; justify-content: space-between; gap: 8px; font-weight: 600; margin-bottom: 4px; }
-.sword { font-weight: 600; color: var(--accent); }
-.sdesc { margin: 4px 0 0; font-size: 12px; color: var(--muted); }
-.range { width: 100%; accent-color: var(--accent); }
-.range-ends { display: flex; justify-content: space-between; gap: 8px; font-size: 11px; color: var(--faint); }
-.range-ends span:nth-child(2) { color: var(--muted); font-family: "IBM Plex Mono", monospace; }
-.sum-top { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 16px; align-items: center; }
-.sum-score { background: var(--accent-soft); border-radius: 10px; padding: 10px 16px; text-align: center; }
-.sum-score .k { display: block; font-size: 12px; color: var(--muted); }
-.sum-score .v { font-family: "Archivo", sans-serif; font-weight: 800; font-size: 40px; line-height: 1; color: var(--accent); }
-.sum-score .v small { font-size: 15px; color: var(--faint); }
-.verdict { margin: 0; font-family: "Archivo", sans-serif; font-weight: 700; font-size: 19px; }
-.verdict.high { color: var(--high); } .verdict.med { color: var(--med); }
-.sum-sub { margin: 4px 0 0; color: var(--muted); }
-.chips2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; margin-top: 14px; }
-.chip2 { background: var(--panel-2); border-radius: 8px; padding: 8px 10px; }
-.chip2 .k { display: block; font-size: 11px; color: var(--muted); }
-.chip2 b { display: block; font-size: 15px; }
-.chip2 .sub { font-size: 12px; }
-.ride { display: grid; gap: 12px; }
-.ride-row .top-line { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; }
-.ride-row .phrase { font-weight: 600; }
-.ride-row .an { font-size: 12px; color: var(--muted); }
-.fixes { display: grid; gap: 8px; }
-.fix { border-left: 3px solid var(--info); background: var(--info-soft); border-radius: 0 8px 8px 0; padding: 8px 10px; }
-.fix.High { border-color: var(--high); background: var(--high-soft); } .fix.Medium { border-color: var(--med); background: var(--med-soft); } .fix.Low { border-color: var(--low); background: var(--low-soft); }
-.fix .t { font-weight: 600; }
-.fix p { margin: 4px 0 0; font-size: 13px; }
-.fix details { margin-top: 4px; font-size: 12px; color: var(--muted); }
-.fix summary { cursor: pointer; color: var(--accent); }
-.tips { margin-top: 10px; font-size: 13px; }
-.tips summary { cursor: pointer; font-weight: 600; }
-.tips ul { margin: 6px 0 0; padding-left: 18px; color: var(--muted); }
-.notice { margin: 10px var(--gutter-r) 0 var(--gutter); padding: 8px 12px; border-radius: 6px; background: var(--low-soft); color: var(--ink); font-size: 13px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
-.notice[hidden] { display: none; }
 
 /* layout */
 .grid { display: grid; grid-template-columns: minmax(360px, 440px) minmax(0, 1fr); gap: 16px; padding: 16px var(--gutter-r) 0 var(--gutter); align-items: start; }
@@ -552,7 +505,7 @@ footer { padding: 16px var(--gutter-r) 32px var(--gutter); color: var(--faint); 
   <input id="buildName" class="name" aria-label="Project name" maxlength="80" placeholder="Untitled project">
   <span id="saveState" class="state" aria-live="polite"></span>
   <div class="actions">
-    <button id="settingsBtn" class="btn setbtn" aria-expanded="false" aria-controls="settings">⚙ Settings <span class="pillm" id="modePill"></span></button>
+    <button id="settingsBtn" class="btn setbtn" aria-expanded="false" aria-controls="settings">⚙ Settings</button>
     <button id="newBtn" class="btn" title="Start a new project from a blank design">+ New project</button>
     <select id="startFrom" class="pick" aria-label="Start from a preset"></select>
     <button id="saveBtn" class="btn primary">Save v1</button>
@@ -562,10 +515,6 @@ footer { padding: 16px var(--gutter-r) 32px var(--gutter); color: var(--faint); 
 </header>
 <div class="settings" id="settings" role="dialog" aria-label="Settings" hidden>
   <div class="set-h"><h2>Settings</h2><button class="x" id="settingsClose" aria-label="Close settings">×</button></div>
-  <div class="set-group"><h3>View</h3>
-    <label class="opt-card"><input type="radio" name="viewMode" value="detailed"><span><b>Detailed</b><small>Every number, chart and layer, for optimizing a layup.</small></span></label>
-    <label class="opt-card"><input type="radio" name="viewMode" value="simple"><span><b>Simple</b><small>Plain-language choices and results. Same physics underneath, and you can switch back any time.</small></span></label>
-  </div>
   <div class="set-group"><h3>Units</h3><div class="seg" id="unitSeg" role="group" aria-label="Units"><button type="button" data-units="metric">Metric</button><button type="button" data-units="us">US</button></div></div>
   <div class="set-group" id="acct" hidden><h3>Account</h3><div class="acct"><span>Signed in as <b id="acctEmail"></b></span><button id="logoutBtn" class="btn small">Log out</button></div></div>
   <div class="set-group" id="guestAcct" hidden><h3>Account</h3><div class="acct"><span>You're a guest: projects save in this browser only.</span><a class="btn small primary" href="/login?next=/lab">Create a free account</a></div></div>
@@ -578,7 +527,6 @@ footer { padding: 16px var(--gutter-r) 32px var(--gutter); color: var(--faint); 
 <main class="grid">
   <section class="inputs" id="inputs" aria-label="Build inputs"></section>
   <section class="results" id="results" aria-label="Results" style="scroll-margin-top:12px">
-    <div id="simpleView" class="simple-only" style="scroll-margin-top:12px"></div>
     <div class="card adv" id="scoreCard" style="scroll-margin-top:12px"></div>
     <div class="card adv" id="matchCard"></div>
     <div class="card"><header><h2>Shape</h2><span class="sub" id="shapeSub"></span></header><div id="shapeView" class="chart"></div></div>
@@ -696,7 +644,8 @@ S.units = lsGet(UNITS_KEY) === "us" ? "us" : "metric";
 let U = E.makeUnits(S.units);
 const analyzeCurrent = () => Object.assign(E.analyze(S.build, { units: S.units }), { costUSD: E.billOfMaterials(S.build).total });
 const SET_KEY = "skiLayupLab.settings.v1";
-const settings = Object.assign({ mode: "detailed", theme: "auto" }, lsGet(SET_KEY) || {});
+const settings = Object.assign({ theme: "auto" }, lsGet(SET_KEY) || {});
+delete settings.mode; // the old Simple/Detailed switch is gone; everyone gets the full view
 
 
 // ------------------------------------------------------------------ storage
@@ -872,7 +821,6 @@ function layerBox(title, swatch, body, sub = "") {
   return `<div class="layer"><div class="lh">${swatch}<b>${title}</b>${sub ? `<span class="hint">${sub}</span>` : ""}</div>${body}</div>`;
 }
 function renderInputs() {
-  if (settings.mode === "simple") return renderInputsSimple();
   const b = S.build;
   const sum = b.core.blend.reduce((a, x) => a + (+x.pct || 0), 0);
   const woodRows = b.core.blend.map((w, i) => `
@@ -1010,8 +958,7 @@ function overlayInfo() {
 }
 
 function renderResults() {
-  if (settings.mode === "simple") renderSimple();
-  else { renderScore(); renderMatch(); renderSection(); renderCharts(); renderAttrs(); renderIssues(); renderLayers(); }
+  renderScore(); renderMatch(); renderSection(); renderCharts(); renderAttrs(); renderIssues(); renderLayers();
   renderShape();
   renderMiniBar();
   renderBOM();
@@ -1269,198 +1216,6 @@ function renderLayers() {
     <p class="why" style="margin:8px 0 0">Bending share is the fraction of strain energy each group carries when the ski flexes, so it shows which layers actually set the stiffness.</p>`;
 }
 
-
-// ------------------------------------------------------------------ simple mode
-// Each simple choice is a named preset for part of the build. If the build was changed in the
-// Detailed view so it matches none of them, the choice shows as "Custom".
-const OZG = (oz) => Math.round(oz * E.OZ);
-const normFab = (list) => (list || []).filter((f) => f.gsm > 0).map((f) => ({ fiber: f.fiber, arch: f.arch, gsm: Math.round(f.gsm), plies: f.plies || 1 }));
-const normBlend = (bl) => (bl || []).filter((x) => x.pct > 0).map((x) => ({ wood: x.wood, pct: +x.pct })).sort((a, b) => a.wood.localeCompare(b.wood));
-const normMetal = (m) => (!m || m.material === "none" ? { m: "none" } : { m: m.material, t: Math.round(m.thicknessMm * 100) / 100, c: m.coverage ?? 1 });
-const metalPair = (mat, t) => mat === "none"
-  ? { metalBottom: { material: "none", thicknessMm: 0.5, coverage: 1 }, metalTop: { material: "none", thicknessMm: 0.5, coverage: 1 } }
-  : { metalBottom: { material: mat, thicknessMm: t, coverage: 1 }, metalTop: { material: mat, thicknessMm: t, coverage: 1 } };
-const fab = (fiber, arch, gsm) => ({ fiber, arch, gsm, plies: 1 });
-const SIMPLE_OPTS = {
-  profile: {
-    read: (b) => ({ c: b.camberMm, t: b.tipRockerCm, r: b.tailRockerCm }),
-    key: (v) => ({ c: v.camberMm, t: v.tipRockerCm, r: v.tailRockerCm }),
-    apply: (b, v) => Object.assign(b, v),
-    options: [
-      ["camber", "Full camber", "Grippy and energetic on groomers; less forgiving in bumps and soft snow.", { camberMm: 5, tipRockerCm: 0, tailRockerCm: 0 }],
-      ["allmtn", "Camber with tip rocker", "All-mountain: holds on hardpack, turns easily and floats a little.", { camberMm: 4, tipRockerCm: 30, tailRockerCm: 15 }],
-      ["rcr", "Rocker–camber–rocker (twin)", "Playful for park, switch riding and soft snow.", { camberMm: 3, tipRockerCm: 30, tailRockerCm: 25 }],
-      ["rocker", "Mostly rocker", "Loose and floaty; the least grip on ice.", { camberMm: 1, tipRockerCm: 45, tailRockerCm: 40 }],
-    ],
-  },
-  mount: {
-    read: (b) => b.mountOffsetCm, key: (v) => v.mountOffsetCm, apply: (b, v) => Object.assign(b, v),
-    options: [
-      ["trad", "Traditional (behind center)", "Strong front of the ski; best for carving and driving the tips.", { mountOffsetCm: -8 }],
-      ["prog", "Progressive", "More balanced; good all-mountain and for some tricks.", { mountOffsetCm: -4 }],
-      ["center", "Centered", "For park and spinning; needs a centered stance.", { mountOffsetCm: 0 }],
-    ],
-  },
-  core: {
-    read: (b) => normBlend(b.core.blend), key: (v) => normBlend(v.blend), apply: (b, v) => { b.core.blend = clone(v.blend); },
-    options: [
-      ["poplar", "Poplar", "Light and lively; the classic DIY core.", { blend: [{ wood: "poplar", pct: 100 }] }],
-      ["poplar-ash", "Poplar with ash", "Light, with stronger edges and better screw grip. A safe all-round choice.", { blend: [{ wood: "poplar", pct: 80 }, { wood: "ash", pct: 20 }] }],
-      ["poplar-beech", "Poplar with beech", "Heavier, damper and more stable at speed.", { blend: [{ wood: "poplar", pct: 70 }, { wood: "beech", pct: 30 }] }],
-      ["paulownia-ash", "Paulownia with ash", "Very light for touring or park; ash keeps the bindings secure.", { blend: [{ wood: "paulownia", pct: 75 }, { wood: "ash", pct: 25 }] }],
-      ["bamboo", "Bamboo", "Springy and tough, but heavier than poplar.", { blend: [{ wood: "bamboo", pct: 100 }] }],
-    ],
-  },
-  glass: {
-    read: (b) => ({ bot: normFab(b.laminatesBottom), top: normFab(b.laminatesTop) }),
-    key: (v) => ({ bot: normFab(v), top: normFab(v) }),
-    apply: (b, v) => { b.laminatesBottom = clone(v); b.laminatesTop = clone(v); },
-    options: [
-      ["none", "None yet", "No fabric above or below the core. Pick one: fiberglass is what gives a ski its strength and twist resistance.", []],
-      ["light", "Light fiberglass", "16 oz triax top and bottom. Lighter and softer; good for park and lighter skiers.", [fab("eglass", "triax", OZG(16))]],
-      ["std", "Standard fiberglass", "22 oz triax top and bottom. The usual DIY layup: good twist resistance and durability.", [fab("eglass", "triax", OZG(22))]],
-      ["strong", "Fiberglass + extra lengthwise glass", "Stiffer and more powerful, for bigger or faster skiers.", [fab("eglass", "triax", OZG(22)), fab("eglass", "ud", 300)]],
-      ["carbon", "Fiberglass + carbon", "Stiffer and poppier for little extra weight, but chattier.", [fab("eglass", "triax", OZG(16)), fab("carbon", "ud", 200)]],
-      ["flax", "Flax (natural fiber)", "Damp and smooth. Has to be kept dry before layup.", [fab("flax", "biax45", 400)]],
-      ["basalt", "Basalt", "Damper than glass with similar strength.", [fab("basalt", "triax", 600)]],
-    ],
-  },
-  metal: {
-    read: (b) => ({ bot: normMetal(b.metalBottom), top: normMetal(b.metalTop) }),
-    key: (v) => ({ bot: normMetal(v.metalBottom), top: normMetal(v.metalTop) }),
-    apply: (b, v) => Object.assign(b, clone(v)),
-    options: [
-      ["none", "No metal", "Lighter and more playful.", metalPair("none")],
-      ["al-thin", "Thin aluminum, both sides", "0.3 mm 7075 above and below the core: a bit more stability and damping.", metalPair("al7075", 0.3)],
-      ["al", "Aluminum, both sides", "0.5 mm 7075 above and below the core: damp, stable and grippy on hardpack. Heavier, and needs a strong press.", metalPair("al7075", 0.5)],
-      ["ti", "Titanal, both sides", "What charger and race skis use. Hard to buy as a home builder.", metalPair("titanal", 0.5)],
-    ],
-  },
-  sidewall: {
-    read: (b) => b.sidewall.material, key: (v) => v.material,
-    apply: (b, v) => { b.sidewall.material = v.material; if (v.material !== "cap" && !(b.sidewall.widthMm > 0)) b.sidewall.widthMm = 4; },
-    options: [
-      ["abs", "ABS sidewalls", "The standard: good edge grip.", { material: "abs" }],
-      ["phenolic", "Phenolic sidewalls", "Stiffer, for a little more grip and precision.", { material: "phenolic" }],
-      ["uhmw", "UHMW sidewalls", "The toughest against rock and rail hits.", { material: "uhmw" }],
-      ["cap", "Cap (no sidewall)", "Lighter and more forgiving; a bit less grip on ice.", { material: "cap" }],
-    ],
-  },
-  base: {
-    read: (b) => b.base.material, key: (v) => v.material, apply: (b, v) => { b.base.material = v.material; },
-    options: [
-      ["sintered", "Sintered", "Fast; needs regular waxing.", { material: "sintered" }],
-      ["extruded", "Extruded", "Slower, but low-maintenance and easy to repair.", { material: "extruded" }],
-      ["graphite", "Graphite race", "The fastest; needs the most care.", { material: "graphite" }],
-    ],
-  },
-};
-const simpleCurrent = (k) => {
-  const d = SIMPLE_OPTS[k], cur = JSON.stringify(d.read(S.build));
-  const hit = d.options.find((o) => JSON.stringify(d.key(o[3])) === cur);
-  return hit ? hit[0] : "";
-};
-function simpleSelect(k, title) {
-  const d = SIMPLE_OPTS[k], cur = simpleCurrent(k);
-  const opts = d.options.map(([key, name]) => `<option value="${key}"${key === cur ? " selected" : ""}>${esc(name)}</option>`).join("")
-    + (cur ? "" : `<option value="" selected>Custom (set in Detailed view)</option>`);
-  const desc = cur ? d.options.find((o) => o[0] === cur)[2] : "This part was customized in the Detailed view. Pick an option to replace it.";
-  return `<div class="sfield"><label class="slabel" for="s-${k}">${title}</label><select class="sel" id="s-${k}" data-simple="${k}">${opts}</select><p class="sdesc">${esc(desc)}</p></div>`;
-}
-function renderInputsSimple() {
-  const b = S.build;
-  $("#inputs").innerHTML = `
-  <div class="card">
-    <div class="group-title"><h3>Your ski</h3></div>
-    <table class="sheet">${sheetRows(SHAPE.slice(0, 4))}</table>
-    <div style="margin-top:12px">${simpleSelect("profile", "Camber profile")}${simpleSelect("mount", "Binding mount")}</div>
-  </div>
-  <div class="card">
-    <div class="group-title"><h3>What it's made of</h3></div>
-    ${simpleSelect("core", "Core wood")}
-    <div class="sfield"><div class="slabel"><span>Stiffness</span><span class="sword" id="stiffWord"></span></div>
-      <input type="range" class="range" data-path="core.underfootMm" min="8" max="14" step="0.25" value="${b.core.underfootMm}" aria-label="Stiffness (core thickness underfoot)">
-      <div class="range-ends"><span>Softer, easier</span><span id="stiffThick"></span><span>Stiffer, more powerful</span></div>
-      <p class="sdesc">Sets how thick the wood core is under your boot.</p></div>
-    ${simpleSelect("glass", "Fiberglass")}
-    ${simpleSelect("metal", "Metal")}
-    ${simpleSelect("sidewall", "Sides")}
-    ${simpleSelect("base", "Base")}
-    <div class="sfield"><label class="check"><input type="checkbox" data-path="rubber.on" ${b.rubber.on ? "checked" : ""}> Rubber strip over the edges <span class="hint">(recommended)</span></label></div>
-  </div>
-  <div class="card">
-    <div class="group-title"><h3>How you'll press it</h3></div>
-    <div class="sfield"><select class="sel" data-path="press" aria-label="Press">${opt(E.PRESSES, b.press)}</select>
-      <p class="sdesc">Decides whether metal layers can bond properly.</p></div>
-  </div>`;
-  $("#buildName").value = b.name || "";
-}
-$("#inputs").addEventListener("change", (e) => {
-  const sel = e.target.closest("[data-simple]"); if (!sel || !sel.value) return;
-  const d = SIMPLE_OPTS[sel.dataset.simple], o = d.options.find((x) => x[0] === sel.value);
-  if (!o) return;
-  d.apply(S.build, clone(o[3]));
-  renderInputs(); schedule();
-});
-
-const ATTR_TEXT = {
-  edge: ["Washes out on hard snow", "Holds on soft groomers, skids on ice", "Confident on most groomers", "Locks into hardpack", "Bites even on ice"],
-  damping: ["Very lively; chatters at speed", "Lively; some chatter when it's firm", "Smooth at moderate speed", "Calm and planted", "Glued to the snow at speed"],
-  pop: ["Quiet, little rebound", "Mellow rebound", "Springs out of turns", "Lively and poppy", "Very springy"],
-  glide: ["Slow", "A bit slow", "Average speed", "Fast", "Very fast"],
-  lightness: ["Very heavy", "Heavy, but stable", "Average weight", "Light and easy to swing", "Very light"],
-  durability: ["Fragile", "Needs care", "Durable", "Very durable", "Bombproof"],
-};
-const level5 = (v) => v < 2 ? 0 : v < 2.8 ? 1 : v < 3.5 ? 2 : v < 4.2 ? 3 : 4;
-const flexWord = (ei) => ei < 200 ? "Soft" : ei < 300 ? "Medium" : ei < 380 ? "Stiff" : "Very stiff";
-const turnWord = (R) => R < 13 ? "Short, quick turns" : R < 17 ? "Short-to-medium turns" : R < 21 ? "Medium-to-long turns" : "Long, fast turns";
-const fitWord = (f) => f >= 8 ? "Great" : f >= 7 ? "Good" : f >= 6 ? "OK" : "Not ideal";
-const plainName = (n) => n.replace(/ \(\d+\)$/, "");
-
-function renderSimple() {
-  const r = S.result, sc = r.scores, { best } = overlayInfo();
-  const by = (s) => r.issues.filter((i) => i.severity === s);
-  const highs = by("High"), meds = by("Medium"), lows = by("Low"), infos = by("Info");
-  let verdict, tone = "";
-  if (highs.length) { verdict = `Fix ${highs.length === 1 ? "one serious problem" : highs.length + " serious problems"} before you press this.`; tone = "high"; }
-  else if (meds.length) { verdict = `Buildable. ${meds.length === 1 ? "One thing is" : meds.length + " things are"} worth fixing first.`; tone = "med"; }
-  else verdict = "Ready to build.";
-  const fits = [...r.fits].sort((a, b) => b.fit - a.fit), swk = strengthsOf(r);
-  const short = (xs) => xs.map((f) => f.name.split(" (")[0].toLowerCase()).join(" and ");
-  const sub = swk.hi === swk.lo ? `Even across every use case. It should ride most like the ${plainName(best.ref.build.name)}.`
-    : `Strongest at ${short(swk.strong)}, weakest at ${short(swk.weak)}. It should ride most like the ${plainName(best.ref.build.name)}.`;
-  const ride = E.ATTRS.map((a) => {
-    const v = r.attributes[a.key];
-    return `<div class="ride-row"><div class="top-line"><span><span class="phrase">${ATTR_TEXT[a.key][level5(v)]}</span> <span class="an">· ${a.name}</span></span><span class="num">${fmt(v, 1)}/5</span></div>
-      <div class="track"><span class="fill" style="width:${(v - 1) / 4 * 100}%"></span></div></div>`;
-  }).join("");
-  const fitRows = fits.map((f) => `<div class="ride-row"><div class="top-line"><span><span class="phrase">${f.name}</span> ${swk.tag(f)}<span class="an">· ${fitWord(f.fit)}</span></span><span class="num">${fmt(f.fit, 1)}/10</span></div>
-      <div class="track"><span class="fill" style="width:${f.fit * 10}%"></span></div></div>`).join("");
-  const label = { High: "Must fix", Medium: "Should fix", Low: "Nice to fix" };
-  const fixCards = [...highs, ...meds, ...lows].map((i) => `<div class="fix ${i.severity}"><div class="t"><span class="chip ${i.severity}">${label[i.severity]}</span>${esc(i.plain?.title || i.title)}</div>
-      <p><b>Fix:</b> ${esc(i.plain?.fix || i.fix)}</p><details><summary>Why?</summary>${esc(i.why)}</details></div>`).join("");
-  const tips = infos.length ? `<details class="tips"><summary>Building tips (${infos.length})</summary><ul>${infos.map((i) => `<li><b>${esc(i.title)}.</b> ${esc(i.fix)}</li>`).join("")}</ul></details>` : "";
-  $("#simpleView").innerHTML = `
-    <div class="card">
-      <div class="sum-top"><div class="sum-score"><span class="k">Overall</span><span class="v">${fmt(sc.overall, 1)}<small>/10</small></span></div>
-        <div><p class="verdict ${tone}">${verdict}</p><p class="sum-sub">${esc(sub)}</p></div></div>
-      <div class="chips2">
-        <div class="chip2"><span class="k">Turns</span><b>${turnWord(r.geometry.sidecutR)}</b><span class="sub">sidecut ${U.fmt("lenM", r.geometry.sidecutR)}</span></div>
-        <div class="chip2"><span class="k">Flex</span><b>${flexWord(r.zones.EI.underfoot)}</b><span class="sub">underfoot</span></div>
-        <div class="chip2"><span class="k">Weight per ski</span><b>${U.fmt("massG", r.weightG)}</b><span class="sub">${level5(r.attributes.lightness) >= 3 ? "light" : level5(r.attributes.lightness) <= 1 ? "on the heavy side" : "about average"}</span></div>
-        <div class="chip2"><span class="k">Rides like</span><b>${esc(plainName(best.ref.build.name))}</b><span class="sub">${fmt(best.sim, 0)}% similar</span></div>
-      </div>
-    </div>
-    <div class="cols2" style="margin-top:12px">
-      <div class="card"><header><h2>How it will ride</h2></header><div class="ride">${ride}</div></div>
-      <div class="card"><header><h2>Strengths and weaknesses</h2><span class="sub">all six count equally</span></header><div class="ride">${fitRows}</div></div>
-    </div>
-    <div class="card" style="margin-top:12px"><header><h2>Before you build</h2><span class="sub">${highs.length + meds.length + lows.length ? `${highs.length + meds.length + lows.length} to look at` : "nothing to fix"}</span></header>
-      <div class="fixes">${fixCards || `<p class="ok" style="margin:0">No problems found. Nice layup.</p>`}</div>${tips}</div>`;
-  const sw = $("#stiffWord"), st = $("#stiffThick");
-  if (sw) sw.textContent = flexWord(r.zones.EI.underfoot);
-  if (st) st.textContent = U.fmt("thickMm", S.build.core.underfootMm, S.units === "us" ? 3 : 2) + " core";
-}
 
 // ------------------------------------------------------------------ projects & iterations
 // A project is one ski. Every save adds an iteration (v1, v2, …) instead of overwriting, so an
@@ -1862,7 +1617,7 @@ function renderProjects() {
   const callout = p.iterations.length > 1 && best.id !== latest.id && r1(iterScore(p.id, best)) > r1(iterScore(p.id, latest))
     ? `<div class="notice" style="margin:0 0 12px">Your latest iteration (${esc(latest.label)}, ${fmt(iterScore(p.id, latest), 1)}) scores below your best (${esc(best.label)}, ${fmt(iterScore(p.id, best), 1)}). Both are kept. <button class="btn small" data-iopen="${esc(p.id + "|" + best.id)}">Open ${esc(best.label)}</button></div>` : "";
 
-  const groups = TREND_GROUPS().filter((g) => !(g.adv && settings.mode === "simple"));
+  const groups = TREND_GROUPS();
   const g = groups.find((x) => x.key === S.pv.group) || groups[0];
   let iters = p.iterations;
   if (S.pv.show === "top5") { const top = new Set([...iters].sort((a, b) => iterScore(p.id, b) - iterScore(p.id, a)).slice(0, 5).map((i) => i.id)); iters = iters.filter((i) => top.has(i.id)); }
@@ -2023,7 +1778,7 @@ function renderCompare() {
   const rows = [
     ["Scores"],
     ["Overall", (r) => r.scores.overall, 1, "max"], ["Performance", (r) => r.scores.performance, 1, "max"], ["Build quality", (r) => r.scores.buildQuality, 1, "max"],
-    [settings.mode === "simple" ? "Basics" : "Physics"],
+    ["Physics"],
     [`Weight (${U.unit("massG")})`, (r) => U.val("massG", r.weightG), us ? 2 : 0, "min"], [`Weight at ${U.fmt("lenCm", 177)} (${U.unit("massG")})`, (r) => U.val("massG", r.weight177), us ? 2 : 0, "min"],
     [`Sidecut radius (${U.unit("lenM")})`, (r) => U.val("lenM", r.geometry.sidecutR), 1],
     ["Materials, est. ($)", (r) => r.costUSD ?? "—", 0, "min"],
@@ -2035,7 +1790,7 @@ function renderCompare() {
     ["Issues"], ["High / Medium", (r) => r.issues.filter((i) => i.severity === "High").length + " / " + r.issues.filter((i) => i.severity === "Medium").length],
   ];
   const head = `<thead><tr><th></th>${cols.map((c) => `<th style="${c.ref ? "color:var(--ref)" : c.live ? "color:var(--accent)" : ""}">${esc(c.name)}</th>`).join("")}</tr></thead>`;
-  const body = rows.filter((row) => !(settings.mode === "simple" && row.adv)).map((row) => {
+  const body = rows.map((row) => {
     if (row.length === 1) return `<tr class="sect"><td colspan="${cols.length + 1}">${row[0]}</td></tr>`;
     const [label, f, d, best] = row;
     const vals = cols.map((c) => f(c.r));
@@ -2229,27 +1984,19 @@ $("#logoutBtn").addEventListener("click", async () => {
 // ------------------------------------------------------------------ settings
 function applySettings() {
   const root = document.documentElement;
-  root.dataset.mode = settings.mode;
   if (settings.theme === "light" || settings.theme === "dark") root.dataset.theme = settings.theme; else delete root.dataset.theme;
-  for (const r of document.querySelectorAll('input[name="viewMode"]')) r.checked = r.value === settings.mode;
   for (const b of document.querySelectorAll("#themeSeg button")) b.setAttribute("aria-pressed", String(b.dataset.themeSet === settings.theme));
-  $("#modePill").textContent = settings.mode === "simple" ? "Simple" : "Detailed";
 }
 const saveSettings = () => lsSet(SET_KEY, settings);
 function openSettings(open) {
   $("#settings").hidden = !open;
   $("#settingsBtn").setAttribute("aria-expanded", String(open));
-  if (open) document.querySelector('input[name="viewMode"]:checked')?.focus();
+  if (open) $("#unitSeg button[aria-pressed=\"true\"]")?.focus();
 }
 $("#settingsBtn").addEventListener("click", (e) => { e.stopPropagation(); openSettings($("#settings").hidden); });
 $("#settingsClose").addEventListener("click", () => { openSettings(false); $("#settingsBtn").focus(); });
 document.addEventListener("click", (e) => { if (!$("#settings").hidden && !e.target.closest("#settings") && !e.target.closest("#settingsBtn")) openSettings(false); });
 document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !$("#settings").hidden) { openSettings(false); $("#settingsBtn").focus(); } });
-$("#settings").addEventListener("change", (e) => {
-  if (e.target.name !== "viewMode") return;
-  settings.mode = e.target.value === "simple" ? "simple" : "detailed"; saveSettings(); applySettings();
-  renderInputs(); renderResults();
-});
 $("#themeSeg").addEventListener("click", (e) => {
   const b = e.target.closest("[data-theme-set]"); if (!b) return;
   settings.theme = b.dataset.themeSet; saveSettings(); applySettings();

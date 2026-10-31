@@ -61,6 +61,15 @@ const SCHEMA = [
     key TEXT PRIMARY KEY,
     n INTEGER NOT NULL,
     reset_at BIGINT NOT NULL)`,
+  // One pending email sign-in per address: a 6-digit code and a link token, both stored hashed.
+  `CREATE TABLE IF NOT EXISTS login_codes (
+    email TEXT PRIMARY KEY,
+    code_hash TEXT NOT NULL,
+    token_hash TEXT NOT NULL,
+    expires_at BIGINT NOT NULL,
+    attempts INTEGER NOT NULL,
+    created_at BIGINT NOT NULL)`,
+  `CREATE INDEX IF NOT EXISTS login_codes_token ON login_codes(token_hash)`,
 ];
 
 const pgUrl = () => process.env.DATABASE_URL || process.env.POSTGRES_URL || "";
@@ -165,6 +174,21 @@ export async function addFailure(key: string, windowMs: number) {
 export async function clearFailures(key: string) {
   await (await db()).run("DELETE FROM login_failures WHERE key = $1", [key]);
 }
+
+// ---- email sign-in codes
+export type LoginCode = { email: string; codeHash: string; tokenHash: string; expiresAt: number; attempts: number };
+const codeRow = (r: Row | null): LoginCode | null => (r ? { email: r.email, codeHash: r.code_hash, tokenHash: r.token_hash, expiresAt: num(r.expires_at), attempts: num(r.attempts) } : null);
+export async function putLoginCode(email: string, codeHash: string, tokenHash: string, expiresAt: number) {
+  const b = await db();
+  await b.run("DELETE FROM login_codes WHERE expires_at < $1", [Date.now()]);
+  await b.run(`INSERT INTO login_codes (email, code_hash, token_hash, expires_at, attempts, created_at) VALUES ($1, $2, $3, $4, 0, $5)
+    ON CONFLICT (email) DO UPDATE SET code_hash = excluded.code_hash, token_hash = excluded.token_hash, expires_at = excluded.expires_at, attempts = 0, created_at = excluded.created_at`,
+    [email, codeHash, tokenHash, expiresAt, Date.now()]);
+}
+export async function getLoginCode(email: string) { return codeRow(await one("SELECT * FROM login_codes WHERE email = $1", [email])); }
+export async function getLoginCodeByToken(tokenHash: string) { return codeRow(await one("SELECT * FROM login_codes WHERE token_hash = $1", [tokenHash])); }
+export async function bumpLoginCodeAttempts(email: string) { await (await db()).run("UPDATE login_codes SET attempts = attempts + 1 WHERE email = $1", [email]); }
+export async function deleteLoginCode(email: string) { await (await db()).run("DELETE FROM login_codes WHERE email = $1", [email]); }
 
 // ---- builds, always scoped to their owner
 const fromRow = (r: Row): SavedBuild => ({ ...JSON.parse(r.body), id: r.id, name: r.name, savedAt: num(r.saved_at), createdAt: num(r.created_at) });

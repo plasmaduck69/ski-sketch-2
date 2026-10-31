@@ -1,48 +1,64 @@
 "use client";
-// One flow for everyone: type your email, press Continue, and the page shows "Welcome back"
-// (password) or "Create your account" (new password). No choosing between sign in and sign up.
+// Email sign-in, no passwords: type your email, get a 6-digit code (and a link) by email, enter
+// the code. The first time an email is verified, its account is created.
 import { useEffect, useRef, useState } from "react";
 import styles from "./login.module.css";
 
-type Step = "email" | "login" | "signup";
+type Step = "email" | "code" | "link";
 const LAST_EMAIL = "layupLab.lastEmail";
+const RESEND_AFTER = 30; // seconds
 
-export default function LoginForm({ next, signupsOpen }: { next: string; signupsOpen: boolean }) {
-  const [step, setStep] = useState<Step>("email");
+export default function LoginForm({ next, signupsOpen, token }: { next: string; signupsOpen: boolean; token?: string }) {
+  const [step, setStep] = useState<Step>(token ? "link" : "email");
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [show, setShow] = useState(false);
+  const [code, setCode] = useState("");
+  const [printed, setPrinted] = useState(false);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
-  const pw = useRef<HTMLInputElement>(null);
+  const [wait, setWait] = useState(0);
+  const codeRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => { try { const last = localStorage.getItem(LAST_EMAIL); if (last) setEmail(last); } catch { /* private window */ } }, []);
-  useEffect(() => { if (step !== "email") pw.current?.focus(); }, [step]);
+  useEffect(() => { if (step === "code") codeRef.current?.focus(); }, [step]);
+  useEffect(() => { if (wait <= 0) return; const t = setTimeout(() => setWait(wait - 1), 1000); return () => clearTimeout(t); }, [wait]);
 
   async function post(path: string, body: unknown) {
     const r = await fetch(path, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) });
-    return { ok: r.ok, status: r.status, data: await r.json().catch(() => ({} as { error?: string; exists?: boolean })) };
+    return { ok: r.ok, data: await r.json().catch(() => ({} as { error?: string; printed?: boolean; email?: string })) };
+  }
+  function done(addr: string) {
+    try { if (addr) localStorage.setItem(LAST_EMAIL, addr); } catch { /* fine */ }
+    window.location.assign(next);
+  }
+
+  // Opened from the link in the email: sign in right away.
+  useEffect(() => {
+    if (!token) return;
+    (async () => {
+      try {
+        const { ok, data } = await post("/api/auth/verify", { token });
+        if (ok) return done(data.email || "");
+        setError(data.error || "That link didn't work. Enter your email to get a new code.");
+      } catch { setError("Couldn't reach the server. Check your connection and try again."); }
+      setStep("email");
+    })();
+  }, [token]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  async function sendCode() {
+    const { ok, data } = await post("/api/auth/email-code", { email, next });
+    if (!ok) { setError(data.error || "Couldn't send a code. Try again."); return false; }
+    setPrinted(!!data.printed); setCode(""); setWait(RESEND_AFTER);
+    return true;
   }
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setBusy(true); setError("");
     try {
-      if (step === "email") {
-        const { ok, data } = await post("/api/auth/check", { email });
-        if (!ok) return setError(data.error || "Something went wrong. Try again.");
-        if (data.exists) setStep("login");
-        else if (signupsOpen) setStep("signup");
-        else setError("There's no account with that email, and new accounts are turned off on this site.");
-        return;
-      }
-      const { ok, status, data } = await post(`/api/auth/${step}`, { email, password });
-      if (ok) {
-        try { localStorage.setItem(LAST_EMAIL, email.trim().toLowerCase()); } catch { /* fine */ }
-        window.location.assign(next);
-        return;
-      }
-      setError(step === "login" && status === 401 ? "That password doesn't match. Try again." : data.error || "Something went wrong. Try again.");
+      if (step === "email") { if (await sendCode()) setStep("code"); return; }
+      const { ok, data } = await post("/api/auth/verify", { email, code });
+      if (ok) return done(email.trim().toLowerCase());
+      setError(data.error || "That code didn't work. Check it, or get a new one.");
     } catch {
       setError("Couldn't reach the server. Check your connection and try again.");
     } finally {
@@ -50,36 +66,48 @@ export default function LoginForm({ next, signupsOpen }: { next: string; signups
     }
   }
 
-  const back = () => { setStep("email"); setPassword(""); setError(""); };
-  const title = step === "email" ? "Sign in or create an account" : step === "login" ? "Welcome back" : "Create your account";
-  const sub = step === "email" ? "Enter your email to continue." : step === "login" ? "Enter your password." : "Pick a password, at least 8 characters. Your projects stay private to your account.";
+  async function resend() {
+    setBusy(true); setError("");
+    try { await sendCode(); } catch { setError("Couldn't reach the server."); } finally { setBusy(false); }
+  }
+
+  if (step === "link") {
+    return <div className={styles.form}><h1>Signing you in…</h1><p className={styles.sub}>One moment.</p></div>;
+  }
 
   return (
     <form onSubmit={submit} className={styles.form}>
-      <h1>{title}</h1>
-      <p className={styles.sub}>{sub}</p>
-      <label>Email
-        <div className={styles.row}>
-          <input type="email" name="email" autoComplete="username email" required autoFocus={step === "email"} readOnly={step !== "email"}
-            value={email} onChange={(e) => setEmail(e.target.value)} />
-          {step !== "email" && <button type="button" className={styles.link} onClick={back}>Change</button>}
-        </div>
-      </label>
-      {step !== "email" && (
-        <label>Password
-          <div className={styles.row}>
-            <input ref={pw} type={show ? "text" : "password"} name="password" required minLength={step === "signup" ? 8 : undefined}
-              autoComplete={step === "login" ? "current-password" : "new-password"} value={password} onChange={(e) => setPassword(e.target.value)} />
-            <button type="button" className={styles.link} onClick={() => setShow(!show)} aria-pressed={show}>{show ? "Hide" : "Show"}</button>
-          </div>
+      <h1>{step === "email" ? "Sign in to Layup Lab" : "Check your email"}</h1>
+      <p className={styles.sub}>
+        {step === "email"
+          ? `Enter your email and we'll send you a 6-digit code. No password needed${signupsOpen ? "; if you're new, this creates your account" : ""}.`
+          : printed
+            ? "Email isn't set up on this computer, so your code is shown in the Terminal window running Layup Lab."
+            : <>We sent a code to <b>{email}</b>. It expires in 15 minutes. You can also tap the link in the email.</>}
+      </p>
+      {step === "email" ? (
+        <label>Email
+          <input type="email" name="email" autoComplete="email" required autoFocus value={email} onChange={(e) => setEmail(e.target.value)} />
+        </label>
+      ) : (
+        <label>6-digit code
+          <input ref={codeRef} className={styles.code} name="code" inputMode="numeric" autoComplete="one-time-code" pattern="[0-9 ]{6,7}" maxLength={7} required
+            placeholder="123456" value={code} onChange={(e) => setCode(e.target.value.replace(/[^\d ]/g, ""))} />
         </label>
       )}
       {error && <p className={styles.error} role="alert">{error}</p>}
-      <button type="submit" disabled={busy}>{busy ? "One moment…" : step === "email" ? "Continue" : step === "login" ? "Sign in" : "Create account"}</button>
-      {step === "login" && <p className={styles.fine}>Forgot it? Password reset by email isn't set up yet.</p>}
+      <button type="submit" disabled={busy}>{busy ? "One moment…" : step === "email" ? "Email me a code" : "Sign in"}</button>
+      {step === "code" && (
+        <p className={styles.fine}>
+          Didn&apos;t get it? Check spam, or{" "}
+          <button type="button" className={styles.link} onClick={resend} disabled={busy || wait > 0}>{wait > 0 ? `resend in ${wait}s` : "send a new code"}</button>
+          {" · "}
+          <button type="button" className={styles.link} onClick={() => { setStep("email"); setError(""); }}>use a different email</button>
+        </p>
+      )}
       <div className={styles.or}><span>or</span></div>
       <a className={styles.guest} href="/try">Try it without an account</a>
-      <p className={styles.fine}>As a guest, projects save in this browser. Make an account later and you can move them in.</p>
+      <p className={styles.fine}>As a guest, projects save in this browser. Sign in later and you can move them in.</p>
     </form>
   );
 }

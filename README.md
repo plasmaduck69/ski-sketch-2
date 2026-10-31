@@ -67,15 +67,31 @@ browser storage, and the optimizer runs on the server and checks every combinati
 
 ## Accounts and security
 
-- Passwords are hashed with scrypt and a random salt; they're never stored or logged.
-- Signing in sets an HttpOnly, SameSite=Lax session cookie (Secure over HTTPS) that lasts 30 days.
-  Only a SHA-256 hash of the session token is stored, so a copy of the database can't be used to sign in.
-- Requests that change data are rejected if they come from another site.
-- After 8 wrong passwords for one email from one address, sign-in pauses for 15 minutes.
-- Every build row has an `owner`; one account can't read, change or delete another's builds.
+Sign-in is by email, with no passwords: enter your email, get a 6-digit code (and a sign-in link) by
+email, enter the code. The first time an email is verified, its account is created. Or use
+**Try it without an account**: guest projects save in the browser, and after signing in a
+**Move to my account** button brings them in.
 
-Not included yet: password reset by email and "sign in with Google". Both need an email or
-OAuth provider; add them in `lib/auth.ts` when you deploy.
+- Codes and links expire after 15 minutes, work once, and are stored only as hashes. Five wrong
+  codes cancel a code. Code requests are limited per address and per email.
+- Signing in sets an HttpOnly, SameSite=Lax session cookie (Secure over HTTPS) that lasts 180 days.
+  Only a SHA-256 hash of the session token is stored.
+- Requests that change data are rejected if they come from another site.
+- Every project row has an `owner`; one account can't read, change or delete another's.
+
+### Sending the emails (Resend)
+
+1. Make a free account at resend.com (3,000 emails a month).
+2. **Domains → Add Domain**: add your domain and put the DNS records it shows at your domain's
+   DNS provider, then wait for **Verified**.
+3. **API Keys → Create API Key**, and copy it.
+4. In Vercel, **Settings → Environment Variables**: add `RESEND_API_KEY` (the key) and `EMAIL_FROM`
+   (for example `Layup Lab <login@yourdomain.com>`), then redeploy.
+
+Until the domain is verified, Resend's test sender only delivers to the email you signed up to
+Resend with. Running on your own computer without a key, the code is printed in the terminal.
+`APP_URL` (optional) sets the address used in sign-in links; otherwise it's the address the request
+came in on.
 
 ## API
 
@@ -84,8 +100,8 @@ POST /api/analyze     { "build": {...}, "units": "metric" | "us" }
 POST /api/optimize    { "build": {...}, "goal": "performance" | "racing" | "park" | "east" | "soft" | "mixed" | "allday",
                         "lock": ["core","thickness","laminate","metal","sidewall"], "maxWeight177": 2200,
                         "units": "us", "thorough": true }
-POST /api/auth/signup  { "email": "...", "password": "..." }
-POST /api/auth/login   { "email": "...", "password": "..." }
+POST /api/auth/email-code { "email": "...", "next": "/lab" }   emails a 6-digit code and a sign-in link
+POST /api/auth/verify     { "email": "...", "code": "123456" } or { "token": "..." }   signs in (creates the account the first time)
 POST /api/auth/logout
 GET  /api/auth/me
 GET  /api/builds

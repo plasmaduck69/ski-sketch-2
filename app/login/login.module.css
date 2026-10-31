@@ -32,3 +32,6 @@
 .guest:hover { border-color: var(--accent); }
 .fine { margin: -4px 0 0; font-size: 13px; color: var(--muted); }
 .setup .guest { margin-top: 14px; }
+.code { font-family: ui-monospace, Menlo, monospace !important; font-size: 22px !important; letter-spacing: 6px; text-align: center; }
+.fine .link { font-size: 13px; padding: 0; }
+.fine .link:disabled { color: var(--muted); cursor: default; }

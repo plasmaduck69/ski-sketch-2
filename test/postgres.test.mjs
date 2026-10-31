@@ -11,4 +11,4 @@ const server = new PGLiteSocketServer({ db: pg, port, host: "127.0.0.1", maxConn
 await server.start();
 process.env.DATABASE_URL = `postgres://postgres:postgres@127.0.0.1:${port}/postgres`;
 after(async () => { await server.stop(); await pg.close(); });
-dbSuite("postgres", { db: await import("../lib/db.ts"), auth: await import("../lib/auth.ts"), expectKind: "postgres" });
+dbSuite("postgres", { db: await import("../lib/db.ts"), auth: await import("../lib/auth.ts"), codes: await import("../lib/login-codes.ts"), expectKind: "postgres" });

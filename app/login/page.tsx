@@ -8,14 +8,14 @@ import styles from "./login.module.css";
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Sign in · Layup Lab" };
 
-export default async function LoginPage({ searchParams }: { searchParams: Promise<{ next?: string }> }) {
-  const { next } = await searchParams;
+export default async function LoginPage({ searchParams }: { searchParams: Promise<{ next?: string; token?: string }> }) {
+  const { next, token } = await searchParams;
   const safeNext = typeof next === "string" && next.startsWith("/") && !next.startsWith("//") ? next : "/lab";
-  const token = (await cookies()).get(SESSION_COOKIE)?.value;
+  const session = (await cookies()).get(SESSION_COOKIE)?.value;
   let setup = "";
   try {
     await dbKind(); // opens the database, so a missing one is caught before anyone types a password
-    if (await userFromCookieValue(token)) redirect(safeNext);
+    if (await userFromCookieValue(session)) redirect(safeNext);
   } catch (e) {
     if (e instanceof DbNotConfigured) setup = e.message; else throw e;
   }
@@ -27,7 +27,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
           <span>Layup Lab</span>
         </div>
         {setup ? <div className={styles.setup}><h1>Almost there</h1><p>{setup}</p><a className={styles.guest} href="/try">Try it without an account</a></div>
-          : <LoginForm next={safeNext} signupsOpen={process.env.ALLOW_SIGNUPS !== "false"} />}
+          : <LoginForm next={safeNext} signupsOpen={process.env.ALLOW_SIGNUPS !== "false"} token={typeof token === "string" ? token : undefined} />}
       </div>
     </main>
   );

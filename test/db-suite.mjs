@@ -3,7 +3,7 @@
 import { test, after } from "node:test";
 import assert from "node:assert/strict";
 
-export function dbSuite(name, { db, auth, expectKind }) {
+export function dbSuite(name, { db, auth, codes, expectKind }) {
   after(() => db.closeDb());
 
   test(`${name}: uses the ${expectKind} backend`, async () => {
@@ -65,6 +65,27 @@ export function dbSuite(name, { db, auth, expectKind }) {
     await auth.endSession(withCookie);
     assert.equal(await auth.currentUser(withCookie), null);
     assert.match(await auth.startSession(new Request("https://example.com/"), user.id), /Secure/);
+  });
+
+  test(`${name}: email sign-in codes work once, expire, and lock after 5 wrong tries`, async () => {
+    const e = "rider@example.com";
+    let { code, token } = await codes.issueLoginCode(e);
+    assert.match(code, /^\d{6}$/);
+    assert.equal(await codes.redeemLoginCode({ email: e, code: code === "000000" ? "111111" : "000000" }), null, "wrong code");
+    assert.equal(await codes.redeemLoginCode({ email: e, code: code.slice(0, 3) + " " + code.slice(3) }), e, "right code (spaces ignored)");
+    assert.equal(await codes.redeemLoginCode({ email: e, code }), null, "used once");
+    ({ code, token } = await codes.issueLoginCode(e));
+    assert.equal(await codes.redeemLoginCode({ token }), e, "link works");
+    assert.equal(await codes.redeemLoginCode({ token }), null, "link used once");
+    ({ code } = await codes.issueLoginCode(e));
+    const wrong = code === "999999" ? "888888" : "999999";
+    for (let i = 0; i < 5; i++) await codes.redeemLoginCode({ email: e, code: wrong });
+    assert.equal(await codes.redeemLoginCode({ email: e, code }), null, "locked after 5 wrong tries");
+    ({ code } = await codes.issueLoginCode(e));
+    const row = await db.getLoginCode(e);
+    await db.putLoginCode(e, row.codeHash, row.tokenHash, Date.now() - 1);
+    assert.equal(await codes.redeemLoginCode({ email: e, code }), null, "expired");
+    assert.equal(await codes.redeemLoginCode({ email: "nobody@example.com", code: "123456" }), null);
   });
 
   test(`${name}: failed sign-ins are limited to 8 per 15 minutes`, async () => {

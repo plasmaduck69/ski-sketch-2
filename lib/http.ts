@@ -2,6 +2,7 @@
 import { BASE_BUILD, clone } from "./engine.js";
 import { currentUser, sameOrigin } from "./auth.ts";
 import { DbNotConfigured, DuplicateEmail, type User } from "./db.ts";
+import { EmailNotConfigured, EmailSendFailed } from "./email.ts";
 
 export const MAX_BODY = 512 * 1024; // a project with many iterations is a few hundred KB
 
@@ -46,6 +47,8 @@ export function errorResponse(err: unknown) {
   if (err instanceof HttpError) return Response.json({ error: err.message }, { status: err.status });
   if (err instanceof DbNotConfigured) return Response.json({ error: err.message }, { status: 503 });
   if (err instanceof DuplicateEmail) return Response.json({ error: err.message }, { status: 409 });
+  if (err instanceof EmailNotConfigured) return Response.json({ error: err.message }, { status: 503 });
+  if (err instanceof EmailSendFailed) return Response.json({ error: err.message }, { status: 502 });
   console.error(err);
   return Response.json({ error: "Server error" }, { status: 500 });
 }

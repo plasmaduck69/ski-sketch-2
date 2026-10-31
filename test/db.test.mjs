@@ -6,4 +6,4 @@ import { dbSuite } from "./db-suite.mjs";
 
 delete process.env.DATABASE_URL; delete process.env.POSTGRES_URL;
 process.env.SKI_DB_PATH = join(mkdtempSync(join(tmpdir(), "ski-db-")), "test.db");
-dbSuite("sqlite", { db: await import("../lib/db.ts"), auth: await import("../lib/auth.ts"), expectKind: "sqlite" });
+dbSuite("sqlite", { db: await import("../lib/db.ts"), auth: await import("../lib/auth.ts"), codes: await import("../lib/login-codes.ts"), expectKind: "sqlite" });
